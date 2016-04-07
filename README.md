@@ -1,5 +1,7 @@
 # humhub-modules-logicenter
 
+This module adds functionality and has basic design for first entry http://i.imgur.com/QUdmvLL.png. Before activating/deactivating module, please follow the instructions in  README
+
 Add code to config/local/_settings.php in `Components` array 
 
 'urlManager' => array(
