@@ -21,8 +21,8 @@ class CustomsController extends Controller
         $form->defaultLanguage = HSetting::Get('defaultLanguage');
         $form->dashboardShowProfilePostForm = HSetting::Get('showProfilePostForm', 'dashboard');
         $form->tour = HSetting::Get('enable', 'tour');
-        $form->logic_enter = HSetting::Get('logic_enter');
-        $form->logic_else = HSetting::Get('logic_else');
+        $form->logic_enter = HSetting::GetText('logic_enter');
+        $form->logic_else = HSetting::GetText('logic_else');
         
         $form->defaultSpaceGuid = "";
         foreach (Space::model()->findAllByAttributes(array('auto_add_new_members' => 1)) as $defaultSpace) {
@@ -44,8 +44,8 @@ class CustomsController extends Controller
                 HSetting::Set('defaultLanguage', $form->defaultLanguage);
                 HSetting::Set('enable', $form->tour, 'tour');
                 HSetting::Set('showProfilePostForm', $form->dashboardShowProfilePostForm, 'dashboard');
-                HSetting::Set('logic_enter', $form->logic_enter);
-                HSetting::Set('logic_else', $form->logic_else);
+                HSetting::SetText('logic_enter', $form->logic_enter);
+                HSetting::SetText('logic_else', $form->logic_else);
 
                 $spaceGuids = explode(",", $form->defaultSpaceGuid);
 

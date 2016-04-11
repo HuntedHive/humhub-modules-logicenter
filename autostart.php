@@ -5,6 +5,7 @@ Yii::app()->moduleManager->register(array(
     'import' => array(
         'application.modules.logicenter.*',
         'application.modules.logicenter.forms.*',
+        'application.modules.logicenter.models.*',
     ),
     'events' => array(
     ),
