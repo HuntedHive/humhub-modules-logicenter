@@ -1,6 +1,11 @@
+<style type="text/css">
+	.form-control-code{
+		font-family: 'Courier';
+	}
+</style>
+
 <div class="panel panel-default">
-    <div
-        class="panel-heading"><?php echo Yii::t('AdminModule.views_setting_index', '<strong>Basic</strong> settings'); ?></div>
+    <div class="panel-heading"><?php echo Yii::t('AdminModule.views_setting_index', '<strong>Basic</strong> settings'); ?></div>
     <div class="panel-body">
 
         <?php
@@ -41,19 +46,18 @@
         ));
         ?>
         
-        <label><strong>Matching Logic</strong></label>
+        <strong><?php echo Yii::t('AdminModule.views_setting_index', 'Matching Logic'); ?></strong>
         <div class="form-group">
-            <?php echo $form->labelEx($model, 'logic_enter'); ?>
-            <?php echo $form->textField($model, 'logic_enter', array('class' => 'form-control')); ?>
+            <p class="help-block">
+				<?php echo Yii::t('AdminModule.views_setting_index', 'Custom if-then logic for default user space.'); ?></p>
+            <?php echo $form->textArea($model, 'logic_enter', array('class' => 'form-control form-control-code', 'placeholder' => 'Enter if-then matching logic...', 'spellcheck' => 'false')); ?>
         </div>
         
         <div class="form-group">
-            <?php echo $form->labelEx($model, 'logic_else'); ?>
-            <?php echo $form->textField($model, 'logic_else', array('class' => 'form-control')); ?>
+            <p class="help-block">
+				<?php echo Yii::t('AdminModule.views_setting_index', 'Custom else logic for default user space.'); ?></p>
+            <?php echo $form->textArea($model, 'logic_else', array('class' => 'form-control form-control-code', 'placeholder' => 'Enter else matching logic...', 'spellcheck' => 'false')); ?>
         </div>
-        
-        
-        <p class="help-block"><?php echo Yii::t('AdminModule.views_setting_index', 'New users will automatically added to these space(s).'); ?></p>
         
 
         <strong><?php echo Yii::t('AdminModule.views_setting_index', 'Dashboard'); ?></strong>
