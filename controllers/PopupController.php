@@ -60,40 +60,52 @@ class PopupController extends CController
             // if it is ajax validation request
             if (isset($_POST['ajax'])) {
                 $errors = CActiveForm::validate($registerModel);
+
+                $logic = strtolower(HSetting::GetText("logic_enter"));
+                $ifRegular = $this->ifRegular(explode("then", $logic)[0]);
+                $domain = $this->returnEmail($ifRegular);
+                if(is_null($domain)) {
+                    $registerModel->addError("AccountRegisterForm_email", "Error in parse not found email_domain");
+                }
+
+                if(!preg_match("/^[\w\W]*.(" . str_replace(" ","|", $domain) . ")$/", $_POST['AccountRegisterForm']['email'])) {
+                    $registerModel->addError("AccountRegisterForm_email", "Only: " . $domain);
+                }
+
                 if (!empty($registerModel->hasErrors())) {
-                    echo $errors;
+                    echo json_encode($registerModel->getErrors());
                     Yii::app()->end();
                 }
             }
 
-            if (isset($_POST['AccountRegisterForm'])) {
-                
-                $registerModel->attributes = $_POST['AccountRegisterForm'];
-
-                if ($registerModel->validate()) {
-
-                    // Try Load an invite
-                    $userInvite = UserInvite::model()->findByAttributes(array('email' => $registerModel->email));
-
-                    if ($userInvite === null) {
-                        $userInvite = new UserInvite();
-                    }
-
-                    $userInvite->email = $registerModel->email;
-                    $userInvite->source = UserInvite::SOURCE_SELF;
-                    $userInvite->language = Yii::app()->language;
-                    $userInvite->save();
-
-                    $userInvite->sendInviteMail();
-
-//                    $this->render('register_success', array(
-//                        'model' => $registerModel,
-//                    ));
-//                    return;
-                }
-            }
+//            if (isset($_POST['AccountRegisterForm'])) {
+//
+//                $registerModel->attributes = $_POST['AccountRegisterForm'];
+//
+//                if ($registerModel->validate()) {
+//
+//                    // Try Load an invite
+//                    $userInvite = UserInvite::model()->findByAttributes(array('email' => $registerModel->email));
+//
+//                    if ($userInvite === null) {
+//                        $userInvite = new UserInvite();
+//                    }
+//
+//                    $userInvite->email = $registerModel->email;
+//                    $userInvite->source = UserInvite::SOURCE_SELF;
+//                    $userInvite->language = Yii::app()->language;
+//                    $userInvite->save();
+//
+//                    $userInvite->sendInviteMail();
+//
+////                    $this->render('register_success', array(
+////                        'model' => $registerModel,
+////                    ));
+////                    return;
+//                }
+//            }
         }
-        
+
         $manageReg = new ManageRegistration;
         if (Yii::app()->request->isAjaxRequest) {
         } else {
@@ -103,13 +115,75 @@ class PopupController extends CController
     
     public function actionSecondModal()
     {
-        $logic_enter = strtolower(HSetting::GetText("logic_enter"));
+        $logic = strtolower(HSetting::GetText("logic_enter"));
         $logic_else = HSetting::GetText("logic_else");
-        $ifRegular = $this->ifRegular(explode("then", $logic_enter)[0]);
-        $thenRegular = $this->thenRegular(explode("then", $logic_enter)[1]);
-        var_dump($thenRegular);die;
+        $ifRegular = $this->ifRegular(explode("then", $logic)[0]);
+        $thenRegular = $this->thenRegular(explode("then", $logic)[1])[0][1];
+        $if = '';
+        $mailReg = '';
+        foreach ($ifRegular as $reg) {
+            if(isset($reg[1]) && isset($reg[2]) && isset($reg[3]) && isset($_POST['ManageRegistration'][trim($reg[2])])) {
+                if (trim($reg[2]) != "email_domain") {
+                    $if .= $this->_o($reg[1]) . ' ' . 'in_array("' . $_POST['ManageRegistration'][trim($reg[2])] . '",["' . str_replace(' ', '","', trim($reg[3])) . '"]) ';
+                }
+            } else {
+                $mailReg = $reg[2];
+            }
+        }
+
+        $domain = $this->returnEmail($ifRegular);
+        if(preg_match("/^[\w\W]*.(" . str_replace(" ","|", $mailReg) . ")$/", $_POST['email_domain']) && !is_null($domain)) {
+            $user = new User;
+            $user->username = $_POST['email_domain'];
+            $user->email = $_POST['email_domain'];
+            $user->save();
+
+            $userPassword = new UserPassword;
+            $userPassword->user_id = $user->id;
+            $userPassword->setPassword($_POST['email_domain']);
+            $userPassword->save();
+
+            if ($if) {
+                $then = explode(",", $thenRegular);
+
+                foreach ($then as $circle) {
+                    $space = Space::model()->findByAttributes(['name' => $circle]);
+                    if (empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
+                        $newMemberSpace = new SpaceMembership;
+                        $newMemberSpace->space_id = $space->id;
+                        $newMemberSpace->user_id = $user->id;
+                        $newMemberSpace->status = SpaceMembership::STATUS_MEMBER;
+                        $newMemberSpace->save();
+                    }
+                }
+            } else {
+                $space = Space::model()->findByAttributes(['name' => $logic_else]);
+                if (empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
+                    $newMemberSpace = new SpaceMembership;
+                    $newMemberSpace->space_id = $space->id;
+                    $newMemberSpace->user_id = $user->id;
+                    $newMemberSpace->status = SpaceMembership::STATUS_MEMBER;
+                    $newMemberSpace->save();
+                }
+            }
+
+            $model = new AccountLoginForm;
+            $model->username = $user->email;
+            $model->password = $_POST['email_domain'];
+
+            if ($model->validate() && $model->login()) {
+                $user = User::model()->findByPk(Yii::app()->user->id);
+
+                if (Yii::app()->request->isAjaxRequest) {
+                    $this->htmlRedirect(Yii::app()->user->returnUrl);
+                } else {
+                    $this->redirect(Yii::app()->user->returnUrl);
+                }
+            }
+        }
+        return $this->redirect(['/']);
     }
-    
+
     protected function ifRegular($string)
     {
         $array= [];
@@ -123,7 +197,20 @@ class PopupController extends CController
         preg_match_all("/[\"|'](.*?)[\"|']/i", $string, $array, PREG_SET_ORDER);
         return $this->deleteZeroColumnInArray($array);
     }
-    
+
+    protected function _o($operator)
+    {
+        $operator = strtolower($operator);
+        switch($operator) {
+            case 'and':
+                return '&&';
+            case 'or':
+                return '||';
+            case 'if':
+                return '';
+        }
+    }
+
     protected function deleteZeroColumnInArray($array)
     {
         $newArray = [];
@@ -133,5 +220,44 @@ class PopupController extends CController
         }
         
         return $newArray;
+    }
+
+    protected function returnEmail($array)
+    {
+        foreach ($array as $item) {
+            if(trim($item[2]) == "email_domain")
+            {
+                return $item[3];
+            }
+        }
+
+        return null;
+    }
+    
+    public function actionGetDependTeacherType()
+    {
+        $name = trim($_POST['nameTeacherType']);
+        var_dump($name);
+        $idByName = ManageRegistration::model()->find('name="'.$name.'"');
+        $list = '';
+        if(!empty($idByName)) {
+            $list = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('depend='.$idByName->id),'name', 'name'));
+        } else {
+            $list.= "<option value='other'>other</option>";
+        }
+
+        echo $list;
+    }
+
+    public function toOptions($array)
+    {
+        $options = '';
+
+        foreach ($array as $option) {
+            $options.="<option value='$option'>$option</option>";
+        }
+
+        $options .= "<option value='other'>other</option>";
+        return $options;
     }
 }

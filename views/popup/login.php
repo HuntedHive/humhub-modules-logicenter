@@ -427,11 +427,30 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                         </div>
                         
                         <div class="form-group">
-                        <?php echo $form->dropDownList($manageReg, 'teacher_type', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_TYPE), ['class' => 'manage_reg', 'data-type' => ManageRegistration::TYPE_TEACHER_TYPE]) ?>
+                        <?php echo $form->dropDownList($manageReg, 'teacher_type', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_TYPE), ['class' => 'manage_reg teacher_type', 'data-type' => ManageRegistration::TYPE_TEACHER_TYPE,
+                            'ajax' => array(
+                                'type'=>'POST',
+                                'url'=>Yii::app()->createUrl('/logicenter/popup/getDependTeacherType'),
+                                'update'=>'.subject_area',
+                                'data'=> ['nameTeacherType' => 'js:$(this).val()', 'CSRF_TOKEN' =>'4c38ee055f892da594c264d17bdfc6c6f014d6ee'],
+                                'success' => 'js:function(data) {
+                                    $(".subject_area").empty();
+                                    $(".subject_area").append(data);
+                                    var name = $(".subject_area").attr("name");
+                                    var type = $(".subject_area").data("type");
+                                    if($(".subject_area").val() == "other" && $("input[data-type=\'"+type+"\']").length == 0) {
+                                        $(".subject_area").after("<input name=\'"+name+"\' type=\'text\' data-type=\'"+type+"\'/>");
+                                    } else {
+                                        if($("input[data-type=\'"+type+"\']").length != 0 && $(".subject_area").val() != "other") {
+                                            $("input[data-type=\'"+type+"\']").remove();
+                                        }
+                                    }
+                                }',
+                        )]); ?>
                         </div>
                         
                         <div class="form-group">
-                        <?php echo $form->dropDownList($manageReg, 'subject_area', LogicEntry::getDropDown(ManageRegistration::TYPE_SUBJECT_AREA), ['class' => 'manage_reg', 'data-type' => ManageRegistration::TYPE_SUBJECT_AREA]) ?>
+                        <?php echo $form->dropDownList($manageReg, 'subject_area', LogicEntry::getDropDownDepend(), ['class' => 'manage_reg subject_area', 'data-type' => ManageRegistration::TYPE_SUBJECT_AREA]) ?>
                         </div>
                         
                         <div class="form-group">
@@ -803,13 +822,21 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
         
             $("#account-register-form").on("submit",function (data) {
                if($("#account-register-form .errorMessage").css("display") == "none") {
+                   var email_input = $("#AccountRegisterForm_email").clone();
+                   email_input.attr("type", 'hidden');
+                   email_input.attr("name", "email_domain");
+                   $("#account-register-form-second").append(email_input);
                    $("#modalRegister").modal('hide');
                    $("#modalSecondModal").modal("show");
                }
                
                return false;
             });
-            
+
+            function  addEmptyInput(curr) {
+                return '<input name="'+ curr.attr('name') +'" type="text" data-type="'+ curr.data('type') +'" />';
+            }
+
             $(".manage_reg").change(function() {
                 if($(this).val() == "other") {
                     $(this).parent(".form-group").append('<input name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" />');
@@ -819,6 +846,12 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                     }
                 }
             });
+
+            $(".manage_reg").each(function(index){
+                if($(this).val() == "other") {
+                    $(this).parent(".form-group").append('<input name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" />');
+                }
+            })
 	});
 	
 </script>
