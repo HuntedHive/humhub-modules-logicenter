@@ -36,11 +36,10 @@ class PopupController extends CController
         // collect user input data
         if (isset($_POST['AccountLoginForm'])) {
             $model->attributes = $_POST['AccountLoginForm'];
-
+            var_dump($_POST);
             // validate user input and redirect to the previous page if valid
-            if ($model->validate() && $model->login()) {
+            if ($model->validate() && ($model->login() || $model->secondLogin())) {
                 $user = User::model()->findByPk(Yii::app()->user->id);
-
                 if (Yii::app()->request->isAjaxRequest) {
                     $this->htmlRedirect(Yii::app()->user->returnUrl);
                 } else {
@@ -48,7 +47,6 @@ class PopupController extends CController
                 }
             }
         }
-        
         // Always clear password
         $model->password = "";
 
@@ -77,33 +75,6 @@ class PopupController extends CController
                     Yii::app()->end();
                 }
             }
-
-//            if (isset($_POST['AccountRegisterForm'])) {
-//
-//                $registerModel->attributes = $_POST['AccountRegisterForm'];
-//
-//                if ($registerModel->validate()) {
-//
-//                    // Try Load an invite
-//                    $userInvite = UserInvite::model()->findByAttributes(array('email' => $registerModel->email));
-//
-//                    if ($userInvite === null) {
-//                        $userInvite = new UserInvite();
-//                    }
-//
-//                    $userInvite->email = $registerModel->email;
-//                    $userInvite->source = UserInvite::SOURCE_SELF;
-//                    $userInvite->language = Yii::app()->language;
-//                    $userInvite->save();
-//
-//                    $userInvite->sendInviteMail();
-//
-////                    $this->render('register_success', array(
-////                        'model' => $registerModel,
-////                    ));
-////                    return;
-//                }
-//            }
         }
 
         $manageReg = new ManageRegistration;
