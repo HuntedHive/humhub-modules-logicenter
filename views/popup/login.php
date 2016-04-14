@@ -432,7 +432,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                                 'type'=>'POST',
                                 'url'=>Yii::app()->createUrl('/logicenter/popup/getDependTeacherType'),
                                 'update'=>'.subject_area',
-                                'data'=> ['nameTeacherType' => 'js:$(this).val()', 'CSRF_TOKEN' =>'4c38ee055f892da594c264d17bdfc6c6f014d6ee'],
+                                'data'=> ['nameTeacherType' => 'js:$(this).val()', 'CSRF_TOKEN' =>'4c38ee055f892da594c264d17bdfc6c6f014d6ee', 'type' => 'js:$(this).data("type")'],
                                 'success' => 'js:function(data) {
                                     $(".subject_area").empty();
                                     $(".subject_area").append(data);

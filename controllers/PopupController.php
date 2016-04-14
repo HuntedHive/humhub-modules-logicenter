@@ -237,13 +237,24 @@ class PopupController extends CController
     public function actionGetDependTeacherType()
     {
         $name = trim($_POST['nameTeacherType']);
-        var_dump($name);
-        $idByName = ManageRegistration::model()->find('name="'.$name.'"');
+        $idByName = null;
         $list = '';
-        if(!empty($idByName)) {
-            $list = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('depend='.$idByName->id),'name', 'name'));
+
+        if(isset($_POST['type']) && $_POST['type'] == ManageRegistration::TYPE_TEACHER_TYPE && $_POST['nameTeacherType'] == "other") {
+            $data = ManageRegistration::model()->findAll('type=' . ManageRegistration::TYPE_TEACHER_OTHER);
+            if (!empty($data)) {
+                $list = $this->toOptions(CHtml::listData($data, 'name', 'name'));
+            } else {
+                $list .= "<option value='other'>other</option>";
+            }
         } else {
-            $list.= "<option value='other'>other</option>";
+
+            $idByName = ManageRegistration::model()->find('name="' . $name . '"');
+            if (!empty($idByName)) {
+                $list = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('depend=' . $idByName->id), 'name', 'name'));
+            } else {
+                $list .= "<option value='other'>other</option>";
+            }
         }
 
         echo $list;
