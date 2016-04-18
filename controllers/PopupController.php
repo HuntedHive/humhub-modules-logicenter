@@ -36,7 +36,6 @@ class PopupController extends CController
         // collect user input data
         if (isset($_POST['AccountLoginForm'])) {
             $model->attributes = $_POST['AccountLoginForm'];
-            var_dump($_POST);
             // validate user input and redirect to the previous page if valid
             if ($model->validate() && ($model->login() || $model->secondLogin())) {
                 $user = User::model()->findByPk(Yii::app()->user->id);

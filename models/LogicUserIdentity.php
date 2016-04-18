@@ -57,7 +57,6 @@ class LogicUserIdentity extends CUserIdentity
         $criteria->condition = 'secondery_email=:email';
         $criteria->params = array(':email' => $this->username);
         $user = User::model()->resetScope()->find($criteria);
-        var_dump($this->username);
         // If user not found in db and ldap is enabled, do ldap lookup and create it when found
         if ($user === null && HSetting::Get('enabled', 'authentication_ldap')) {
             try {

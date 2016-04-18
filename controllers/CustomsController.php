@@ -43,9 +43,6 @@ class CustomsController extends Controller
                 $form->logic_enter = $this->validateText($form->logic_enter);
                 preg_match("/[\s]{2,}/", $form->logic_enter, $emptyR);
                 if(empty($emptyR)) {
-                    $this->parseString(explode("THEN", $form->logic_enter)[0]);
-                    die;
-
                     HSetting::Set('name', $form->name);
                     HSetting::Set('baseUrl', $form->baseUrl);
                     HSetting::Set('defaultLanguage', $form->defaultLanguage);
@@ -120,7 +117,6 @@ class CustomsController extends Controller
                  $string = str_replace($item[1],'in_array("' . $_POST['ManageRegistration'][trim($item[2])] . '",["' . str_replace(' ', '","', trim($item[3])) . '"]) ', $string);
             }
         }
-        var_dump($string);die;
     }
 
     protected function _o($operator)
