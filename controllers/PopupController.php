@@ -79,12 +79,15 @@ class PopupController extends CController
         $manageReg = new ManageRegistration;
         if (Yii::app()->request->isAjaxRequest) {
         } else {
+//            echo $this->render('login-updatedui', array('model' => $model, 'registerModel' => $registerModel, 'canRegister' => $canRegister, 'manageReg' => $manageReg))
             echo $this->render('login', array('model' => $model, 'registerModel' => $registerModel, 'canRegister' => $canRegister, 'manageReg' => $manageReg));
         }
     }
-    
+
+
     public function actionSecondModal()
     {
+        $this->validateRequredFields();
         $logic = strtolower(HSetting::GetText("logic_enter"));
         $logic_else = HSetting::GetText("logic_else");
         $ifRegular = $this->ifRegular(explode("then", $logic)[0]);
@@ -93,8 +96,16 @@ class PopupController extends CController
         $mailReg = '';
         foreach ($ifRegular as $reg) {
             if(isset($reg[1]) && isset($reg[2]) && isset($reg[3]) && isset($_POST['ManageRegistration'][trim($reg[2])])) {
-                if (trim($reg[2]) != "email_domain") {
+                if (trim($reg[2]) != "email_domain" && trim($reg[2]) != "subject_area") {
                     $if .= $this->_o($reg[1]) . ' ' . 'in_array("' . $_POST['ManageRegistration'][trim($reg[2])] . '",["' . str_replace(' ', '","', trim($reg[3])) . '"]) ';
+                }
+                if(trim($reg[2]) == "subject_area" && !empty($_POST['ManageRegistration']['subject_area'])) {
+                    foreach ($_POST['ManageRegistration']['subject_area'] as $item) {
+                        if(!in_array($item, explode(" ", trim($reg[3])))) {
+                            $if .= "&& false ";
+                            break;
+                        }
+                    }
                 }
             } else {
                 $mailReg = $reg[2];
@@ -154,6 +165,24 @@ class PopupController extends CController
         return $this->redirect(['/']);
     }
 
+    public function validateRequredFields()
+    {
+        $required = HSetting::model()->findAll("name='required_manage'");
+        $data = $_POST['ManageRegistration'];
+        $errors = [];
+        foreach ($required as $requiredItem) {
+            if($requiredItem->value_text == 1 && empty($data[$requiredItem->value]))
+            {
+                $errors[] = $requiredItem->value . " is required";
+            }
+        }
+
+        if(!empty($errors)) {
+            echo json_encode(['flag' => true, 'errors' => '<div class="errorMessage">' . implode("<br>", $errors) . '</div>']);
+            Yii::app()->end();
+        }
+    }
+
     protected function ifRegular($string)
     {
         $array= [];
@@ -209,36 +238,45 @@ class PopupController extends CController
         $name = trim($_POST['nameTeacherType']);
         $idByName = null;
         $list = '';
-
+        $options = '';
+        $i = 0;
         if(isset($_POST['type']) && $_POST['type'] == ManageRegistration::TYPE_TEACHER_TYPE && $_POST['nameTeacherType'] == "other") {
             $data = ManageRegistration::model()->findAll('type=' . ManageRegistration::TYPE_TEACHER_OTHER);
             if (!empty($data)) {
-                $list = $this->toOptions(CHtml::listData($data, 'name', 'name'));
+                $list = $this->toUl(CHtml::listData($data, 'name', 'name'));
+                $options = $this->toOptions(CHtml::listData($data, 'name', 'name'));
             } else {
-                $list .= "<option value='other'>other</option>";
+                $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
             }
         } else {
-
             $idByName = ManageRegistration::model()->find('name="' . $name . '"');
             if (!empty($idByName)) {
-                $list = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('depend=' . $idByName->id), 'name', 'name'));
+                $list = $this->toUl(CHtml::listData(ManageRegistration::model()->findAll('depend=' . $idByName->id), 'name', 'name'));
+                $options = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('depend=' . $idByName->id), 'name', 'name'));
             } else {
-                $list .= "<option value='other'>other</option>";
+                $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
             }
         }
-
-        echo $list;
+        echo json_encode(['li' => $list, 'option' => $options]);
     }
 
     public function toOptions($array)
     {
         $options = '';
-
         foreach ($array as $option) {
             $options.="<option value='$option'>$option</option>";
         }
-
-        $options .= "<option value='other'>other</option>";
         return $options;
+    }
+
+    public function toUl($array)
+    {
+        $ul = '';
+        $i = 0;
+        foreach ($array as $option) {
+            $ul.='<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">' . $option . '</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
+            $i++;
+        }
+        return $ul;
     }
 }

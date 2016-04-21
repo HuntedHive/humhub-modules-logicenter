@@ -17,4 +17,9 @@ class LogicEntry
 
         return ['other' => 'other'];
     }
+
+    public static function getRequired($type)
+    {
+        return (HSetting::model()->find("name='required_manage' AND value='" . ManageRegistration::$type[$type] .  "'")->value_text == 1)?"*":"";
+    }
 }

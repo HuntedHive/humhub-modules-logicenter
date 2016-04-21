@@ -11,7 +11,14 @@
  */
 $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong> sign in');
 ?>
-
+<style>
+    .blockErrors {
+        width: 100%;
+        text-align: center;
+        margin-top: -23px;
+    }
+</style>
+<div class="SubjectAreaText hidden"></div>
 <div class="container-fluid text-center login-container-home">
 
 	<nav class="navbar navbar-fixed-top topbar" id="topbar-first">
@@ -51,11 +58,11 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
     <div class="container-fluid">
         <div class="row">
             <div class="signin-form col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
-            
+
             	<img class="img-responsive visible-xs banner-small" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/home-banner-small.png">
-            
+
                 <h1><strong>Connecting teachers</strong> to help<br>educate the next generation.</h1>
-                                
+
                 <?php
                     $form = $this->beginWidget('CActiveForm', array('id' => 'account-login-form','enableAjaxValidation' => false,
                 ));
@@ -78,12 +85,12 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                     </div>
                     <?php echo $form->error($model, 'username'); ?>
 					<?php echo $form->error($model, 'password'); ?>
-                </div>  
-                
+                </div>
+
                 <div class="row form-links">
                     <div class="col-xs-6 text-left">
                         <div class="checkbox">
-                            <label><?php echo $form->checkBox($model, 'rememberMe'); ?> 
+                            <label><?php echo $form->checkBox($model, 'rememberMe'); ?>
                                 <?php echo Yii::t('UserModule.views_auth_login', 'Remember me'); ?></label>
                         </div>
                     </div>
@@ -92,9 +99,9 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                             <?php echo Yii::t('UserModule.views_auth_login', 'Forgot password?') ?></a>
                     </div>
                 </div>
-                
+
                 <?php $this->endWidget(); ?>
-                
+
                 <p>Not a member yet?<br>
                     <a data-toggle="modal" data-target="#modalRegister">Join the community now.</a></p>
 
@@ -110,7 +117,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
     <div class="row quote-section">
         <div class="col-xs-12" id="quotes">
         	<img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-apple.png">
-            <?php $this->renderPartial('//quotes/quotes', array()); ?> 
+            <?php $this->renderPartial('//quotes/quotes', array()); ?>
         </div>
 
     </div>
@@ -120,7 +127,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 
     <div class="row-fluid">
         <div class="col-md-5 col-md-offset-1 col-sm-12 text-left about-section-text" id="about">
-            
+
             <h2>Welcome to your teaching community</h2>
 
             <p>TeachConnect is an altruistic network of pre-service, current and experienced teachers across Queensland. It’s free and always will be - because it’s owned by you, the teachers.<br />
@@ -141,7 +148,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
             <h2>What the community has to offer</h2>
         </div>
     </div>
-    
+
     <div class="row row-padding-md">
         <div class="col-sm-4 col-sm-offset-1 col-xs-12 text-center">
             <h3>Mentorship circles</h3>
@@ -152,7 +159,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
             <img class="img-responsive" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-community-1.png">
         </div>
     </div>
-    
+
     <div class="row row-padding-md">
         <div class="col-sm-4 col-sm-offset-1 col-sm-push-6 col-xs-12">
             <h3>Q&amp;A forum</h3>
@@ -163,7 +170,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
         	<img class="img-responsive" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-community-2.png">
         </div>
     </div>
-    
+
     <div class="row row-padding-md">
         <div class="col-sm-4 col-sm-offset-1 col-xs-12">
             <h3>Best of both worlds</h3>
@@ -174,14 +181,14 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
             <img class="img-responsive" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-community-3.png">
         </div>
     </div>
-    
+
 </div>
 
 <div class="container-fluid fat-footer">
     <div class="row-fluid">
         <div class="container">
             <div class="row">
-            
+
                 <div class="col-md-7 contact-details">
                     <div class="row">
                         <div class="col-xs-12"><?php $this->widget('application.widgets.LogoWidget', array()); ?></div>
@@ -189,9 +196,9 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                     <div class="row">
                         <div class="col-xs-12">
                             <p>Have something about TeachConnect that you want to discuss with us? Whether it’s ideas, suggestions or problems, don’t hesitate to get in touch with us on <a href="mailto:teachconnect@outlook.com?Subject=TeachConnect%20Feedback" target="_top">teachconnect@outlook.com</a> or just use the form on this page - we’ll get back to you soon.</p>
-							
+
 							<p>
-							TeachConnect is an inclusive collaboration of many stakeholders, all of whom have an interest in helping teachers. If you or your organisation want to take part, then do get in touch. 
+							TeachConnect is an inclusive collaboration of many stakeholders, all of whom have an interest in helping teachers. If you or your organisation want to take part, then do get in touch.
 							</p>
 							<p>
 							Support for the production of this website has been provided by the Australian Government Office for Learning and Teaching (OLT). Further support has been provided by the Queensland College of Teachers (QCT) and the Australian Research Council (ARC). The website is powered by the Connected Communities platform developed by the Connected Community Research Initiative. The views expressed in this website do not necessarily reflect the views of any of these partners.
@@ -199,10 +206,10 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-lg-3 col-lg-offset-2 col-md-4 col-md-offset-1 text-center" id="contact">
                     <h3>Contact Us</h3>
-                    <form class="form" id="mailgun" role="form" method="POST"> 
+                    <form class="form" id="mailgun" role="form" method="POST">
                         <div class="form-group">
                             <input type="name" id="name" name="name" class="form-control" placeholder="Name" required>
                         </div>
@@ -212,7 +219,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                         </div>
 
                         <div class="form-group">
-                            <textarea id="message" name="message" rows="6" class="form-control" placeholder="Message" required></textarea> 
+                            <textarea id="message" name="message" rows="6" class="form-control" placeholder="Message" required></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Send</button>
@@ -235,7 +242,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                         <button id="send_email" type="submit" class="btn btn-primary">Send</button>
                     </form>-->
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -253,15 +260,15 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
     </div>
 </div>
 </div>
-        
-        
-        
+
+
+
 
 <!-- Registration Modal -->
 <div class="modal" id="modalRegister" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        
+
             <div class="modal-header">
             	<img class="img-responsive" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-register.png">
                 <button type="button" class="close close-feature" data-dismiss="modal" aria-label="Close"><span
@@ -269,7 +276,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                 <h3 class="modal-title" id="myModalLabel"><?php echo Yii::t('UserModule.views_auth_login', '<strong>
                     Join</strong> the TeachConnect Community') ?></h3>
             </div>
-            
+
             <?php if ($canRegister) : ?>
                 <?php
                 $form = $this->beginWidget('CActiveForm', array(
@@ -283,20 +290,21 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
             <div class="modal-body">
 
 
-                <p class="text-center">
-                    <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your e-mail address below."); ?>
+                <p class="lead text-center">
+                    <span class="lead-small">Step 1 of 2</span><br>
+                    <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your primary institutional e-mail address below."); ?>
                 </p>
-                
+
                 <div id="ie-alert-message" class="alert alert-danger" style="display:none;">
                     Unfortunately you will not be able to register using Internet Explorer at this time. Please use another browser such as Chrome or Firefox whilst we work on fixing TeachConnect for Internet Explorer.
                 </div>
                 <div class="row">
                     <div class="form-group col-sm-8 col-sm-offset-2">
                     	<!-- <input class="form-control" id="register-email" required placeholder="Enter your email" name="AccountRegisterForm[email]" value="" type="email"> -->
-                        
-                        <?php echo $form->textField($registerModel, 'email', 
+
+                        <?php echo $form->textField($registerModel, 'email',
                             array(
-                                'class' => 'form-control', 
+                                'class' => 'form-control',
                                 'required' => 'true',
                                 'type' => 'email',
                                 'placeholder' => Yii::t('UserModule.views_auth_login', 'email')
@@ -306,7 +314,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                         <?php echo $form->error($registerModel, 'email'); ?>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-sm-8 col-sm-offset-2">
                         <div class="terms-box">
@@ -314,30 +322,30 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                             <p>
                                 <strong>HREC Approval Number</strong>: H14REA138<br>
                                 <strong>Principal Researcher</strong>: Dr Nick Kelly
-                            </p>    
+                            </p>
 
 
                             <p>By creating an account and signing on to this website, you agree that data from your actions may be used in the research project Studying Support for Teachers in Transition.</p>
-                            
+
                             <p>The data produced by your actions will be analysed and may be published by the researchers. Data will remain anonymous and by used in an unidentifiable way in published research.</p>
 
 
                             <p>Participation in the project through this website is entirely voluntary. If you do not wish to take part you are not obliged to. If you decide to take part and later change your mind, you are free to withdraw from the project at any stage. Any information already obtained from you will be destroyed.</p>
-                            
-                            
+
+
                             <p>Your decision whether to take part or not to take part, or to take part and then withdraw, will not affect your relationship with your university or with the teacher accreditation agencies. Please notify the researcher if you decide to withdraw from this project.</p>
-                            
-                            
+
+
                             <p>Should you have any queries regarding the progress or conduct of this research, you can contact the principal researcher:</p>
-                            
+
                             <p><strong>Dr Nick Kelly</strong><br>
                             Australian Digital Futures Institute<br>
                             Y303, USQ, Toowoomba<br>
                             +61 7 4631 2718</p>
-                            
-                            
+
+
                            <p> If you have any ethical concerns with how the research is being conducted or any queries about your rights as a participant please feel free to contact the University of Southern Queensland Ethics Officer on the following details.</p>
-                            
+
                             <p><strong>Ethics and Research Integrity Officer</strong>
                             Office of Research and Higher Degrees<br>
                             University of Southern Queensland<br>
@@ -345,7 +353,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                             Ph: +61 7 4631 2690<br>
                             Email: <a href="mailto:ethics@usq.edu.au">ethics@usq.edu.au </a>
                             </p>
-                            
+
                             <p>By clicking to agree I confirm that I have read and agree to the following statements:</p>
                             <ul>
                               <li>I have read the Participant Information Sheet and the nature and purpose of the research project has been explained to me. I understand and agree to take part.</li>
@@ -355,12 +363,12 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                               <li>I understand that while information gained during the study may be published, I will not be identified and my personal results will remain confidential.</li>
                               <li>I understand that the data from this project will be securely stored for a minimum of five years.</li>
                             </ul>
-                            
+
                             <p>This information about consent can be found at any time in the “about” section of the website.</p>
                			</div>
                		</div>
                </div>
-               
+
                <div class="row">
                		<div class="col-sm-8 col-sm-offset-2">
                        <div class="checkbox">
@@ -373,7 +381,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 
                 <!-- <?php $this->widget('application.widgets.LanguageChooser'); ?> -->
             </div>
-            
+
             <div class="modal-footer">
             	<div class="row">
                 	 <div class="col-sm-8 col-sm-offset-2">
@@ -383,7 +391,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                 	</div>
                 </div>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -398,44 +406,56 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                         aria-hidden="true">&times;</span></button>
                 <h3 class="modal-title" id="myModalLabel"><?php echo Yii::t('UserModule.views_auth_login', '<strong>
                     Join</strong> the TeachConnect Community') ?></h3>
+                <p class="lead text-center">
+                    <span class="lead-small">Step 2 of 2</span><br>
+                    <?php echo Yii::t('UserModule.views_auth_login', "Please provide some additional information so we can add you to the correct circle."); ?>
+                </p>
             </div>
-            
+
                 <?php
                 $form = $this->beginWidget('CActiveForm', array(
                     'id' => 'account-register-form-second',
-                    'enableAjaxValidation'=>false,
-                    'clientOptions' => array(
-                        'validateOnSubmit'=>true,
-                    ),
                     'action' => Yii::app()->createUrl("/logicenter/popup/secondModal"),
                 ));
                 ?>
+            <div class="blockErrors"></div>
             <div class="modal-body">
 
-
-                <p class="text-center">
-                    <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your e-mail address below."); ?>
-                </p>
-                
                 <div id="ie-alert-message" class="alert alert-danger" style="display:none;">
                     Unfortunately you will not be able to register using Internet Explorer at this time. Please use another browser such as Chrome or Firefox whilst we work on fixing TeachConnect for Internet Explorer.
                 </div>
                 <div class="row">
-                    <div class="form-group col-sm-8 col-sm-offset-2">
-                        <div class="form-group">
-                        <?php echo $form->dropDownList($manageReg, 'teacher_level', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_LEVEL), ['class' => 'manage_reg', 'data-type' => ManageRegistration::TYPE_TEACHER_LEVEL]) ?>
+                        <div class="form-group col-sm-8 col-sm-offset-2">
+                        <?php echo $form->dropDownList($manageReg, 'teacher_level', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_LEVEL), [
+                                'class' => 'manage_reg selectpicker form-control show-tick',
+                                'data-type' => ManageRegistration::TYPE_TEACHER_LEVEL,
+                                "title" => "Select teacher level " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_LEVEL) . "...",
+                        ]); ?>
                         </div>
-                        
-                        <div class="form-group">
-                        <?php echo $form->dropDownList($manageReg, 'teacher_type', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_TYPE), ['class' => 'manage_reg teacher_type', 'data-type' => ManageRegistration::TYPE_TEACHER_TYPE,
+                        <?php echo $form->error($registerModel, 'teacher_level'); ?>
+                        <div class="form-group col-sm-8 col-sm-offset-2">
+                        <?php echo $form->dropDownList($manageReg, 'teacher_type', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_TYPE), [
+                            'class' => 'manage_reg teacher_type selectpicker form-control show-tick',
+                            'data-type' => ManageRegistration::TYPE_TEACHER_TYPE,
+                            'title' => "Select teacher type " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_TYPE) . "...",
                             'ajax' => array(
                                 'type'=>'POST',
-                                'url'=>Yii::app()->createUrl('/logicenter/popup/getDependTeacherType'),
+                                'url'=> \Yii::app()->createUrl('/logicenter/popup/getDependTeacherType'),
                                 'update'=>'.subject_area',
                                 'data'=> ['nameTeacherType' => 'js:$(this).val()', 'CSRF_TOKEN' =>'4c38ee055f892da594c264d17bdfc6c6f014d6ee', 'type' => 'js:$(this).data("type")'],
                                 'success' => 'js:function(data) {
-                                    $(".subject_area").empty();
-                                    $(".subject_area").append(data);
+                                    $(".subject_area .dropdown-menu .inner").empty();
+                                    $(".subject_area .dropdown-menu .inner").append(JSON.parse(data).li);
+                                    
+                                    $(".subject_area .btn").attr("title", $(".SubjectAreaText").text()).find(".filter-option").text($(".SubjectAreaText").text());
+                                    
+                                    $("select.subject_area").empty();
+                                    $("select.subject_area").append(JSON.parse(data).option);
+                                    
+                                    $(".subject_area .dropdown-menu li a").on("click",function() {
+                                        $(this).parent("li").toggleClass("selected");
+                                    });
+                                    
                                     var name = $(".subject_area").attr("name");
                                     var type = $(".subject_area").data("type");
                                     if($(".subject_area").val() == "other" && $("input[data-type=\'"+type+"\']").length == 0) {
@@ -448,16 +468,27 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                                 }',
                         )]); ?>
                         </div>
-                        
-                        <div class="form-group">
-                        <?php echo $form->dropDownList($manageReg, 'subject_area', LogicEntry::getDropDownDepend(), ['class' => 'manage_reg subject_area', 'data-type' => ManageRegistration::TYPE_SUBJECT_AREA]) ?>
+
+                        <div class="form-group col-sm-8 col-sm-offset-2">
+                        <?php echo $form->dropDownList($manageReg, 'subject_area', LogicEntry::getDropDownDepend(), [
+                            'class' => 'manage_reg subject_area selectpicker form-control show-tick',
+                            'data-type' => ManageRegistration::TYPE_SUBJECT_AREA,
+                            'multiple title' => "Select subject area(s) " . LogicEntry::getRequired(ManageRegistration::TYPE_SUBJECT_AREA) . "...",
+                            'multiple'=>'multiple',
+                        ]) ?>
                         </div>
-                        
-                        <div class="form-group">
-                        <?php echo $form->dropDownList($manageReg, 'teacher_interest', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_INTEREST), ['class' => 'manage_reg', 'data-type' => ManageRegistration::TYPE_TEACHER_INTEREST]) ?>
+
+                        <div class="form-group col-sm-8 col-sm-offset-2">
+                        <?php echo $form->dropDownList($manageReg, 'teacher_interest', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_INTEREST), [
+                            'class' => 'manage_reg selectpicker form-control show-tick',
+                            'data-type' => ManageRegistration::TYPE_TEACHER_INTEREST,
+                            'title' => "Select teaching interests " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_INTEREST) . "...",
+                        ]) ?>
                         </div>
-                    </div>
                 </div>
+            </div>
+            <div class="col-sm-8 col-sm-offset-2 row-padding-xs text-center">
+                <small>* required fields</small>
             </div>
             <div class="modal-footer">
             	<div class="row">
@@ -474,53 +505,53 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 <div class="modal" id="modalPrivacy" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        
+
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h3 class="modal-title" id="myModalLabel">Privacy Policy</h3>
             </div>
-            
+
             <div class="modal-body">
             	<hr>
                 <div class="modal-body-scroll">
                     <p><strong>General</strong><br>
-					TeachConnect is an initiative of the StepUp project led by the Queensland University of Technology in partnership with the Australian Catholic University, Griffith University, James Cook University and the University of Queensland.  The social platform called TeachConnect, which is a service provided by the TeachConnect initiative for pre-service and service teachers, holds personal information about its community members. As such, the TeachConnect initiative in the administration of the TeachConnect social platform is bound by the QUT privacy policy, which can be found <a href="http://www.governance.qut.edu.au/compliance/privacy/">here</a>. 
+					TeachConnect is an initiative of the StepUp project led by the Queensland University of Technology in partnership with the Australian Catholic University, Griffith University, James Cook University and the University of Queensland.  The social platform called TeachConnect, which is a service provided by the TeachConnect initiative for pre-service and service teachers, holds personal information about its community members. As such, the TeachConnect initiative in the administration of the TeachConnect social platform is bound by the QUT privacy policy, which can be found <a href="http://www.governance.qut.edu.au/compliance/privacy/">here</a>.
 					</p>
 
                     <p><strong>Information we collect and how we use it</strong><br>
 					The TeachConnect platform stores personal information in order to properly and efficiently carry out its functions. The project only uses personal information for the purpose(s) for which it was given to the platform and the wider TeachConnect initiative and for directly related purposes (unless otherwise required by or authorised by law) or as consented to by the individual concerned.</p>
-    
+
                     <p><strong>Communication - Emails and Electronic Forms</strong><br>
 					The TeachConnect platform stores a record your email address if you sign-up. Your email address will not be added to any mailing lists that are not related to the TeachConnect initiative. The information collected by email or electronic forms will be used only for the purpose for which you provided it, and we will not disclose it to anyone outside of the TeachConnect initiative.</p>
-    
+
                     <p><strong>Cookies</strong><br>
 					A cookie is a small file containing a string of characters on your computer that uniquely identifies your browser. It is information that your web browser sends back to our web site server whenever you visit it again. We use cookies to 'remember' your browser between page visits. In this situation, the cookie identifies your browser, not you personally. No personal information is stored within the cookies of the TeachConnect platform.</p>
-    
+
                     <p><strong>Google Analytics</strong><br>
 					The TeachConnect initiative uses Google Analytics to collect information about visitors to its TeachConnect platform. Google Analytics uses first-party cookies and JavaScript code to help analyse how users use the site. It anonymously tracks how our visitors interact with this website, including how they have accessed the site (for example from a search engine, a link, an advertisement, etc) and what they did on the site. Google will use this information for the purposes of compiling reports on website activity and providing other services relating to website activity and internet usage. You may refuse the use of tracking cookies by selecting the appropriate settings on your browser.</p>
-					
+
 					<p><strong>Information Security</strong><br>
 					We take all reasonable steps:
 					<ul>
 					<li>To protect the personal information held in our possession against loss, unauthorised access, use, modification, disclosure or misuse; and</li>
 					<li>To ensure that, where we have given personal information to a contractor (that carries out a service on the TeachConnect platform), the contractor complies with our information privacy principles.</li>
 					</p>
-					
+
 					<p><strong>Data integrity</strong><br>
 					We take reasonable steps to make sure that the personal information we collect and store is accurate, relevant, up-to-date, complete and not misleading.
 					</p>
-					
+
 					<p><strong>Enforcement</strong><br>
 					The TeachConnect initiative regularly review their compliance with this Policy. If you have any questions/complaints about privacy or confidentiality, or you wish to access or amend your personal information, please email us at: <a href="mailto:teachconnect@outlook.com?Subject=TeachConnect%20Feedback" target="_top">teachconnect@outlook.com</a>
 					</p>
-					
+
 					<p><strong>Changes to this policy</strong><br>/
 					Please note that this Privacy Policy may change from time to time.
 					</p>
-            	</div> 
+            	</div>
             </div>
-            
+
             <div class="modal-footer">
             	<div class="row">
                 	 <div class="col-sm-8 col-sm-offset-2">
@@ -528,7 +559,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                 	</div>
                 </div>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -538,43 +569,43 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 <div class="modal" id="modalTerms" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        
+
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 	<span aria-hidden="true">&times;</span></button>
                 <h3 class="modal-title" id="myModalLabel">Terms &amp; Conditions</h3>
             </div>
-            
+
             <div class="modal-body">
             	<hr>
             	<div class="modal-body-scroll">
                     <p>
                         <strong>HREC Approval Number</strong>: H14REA138<br>
                         <strong>Principal Researcher</strong>: Dr Nick Kelly
-                    </p>    
-    
-    
+                    </p>
+
+
                     <p>By creating an account and signing on to this website, you agree that data from your actions may be used in the research project Studying Support for Teachers in Transition.</p>
-                    
+
                     <p>The data produced by your actions will be analysed and may be published by the researchers. Data will remain anonymous and by used in an unidentifiable way in published research.</p>
-    
-   
+
+
                     <p>Participation in the project through this website is entirely voluntary. If you do not wish to take part you are not obliged to. If you decide to take part and later change your mind, you are free to withdraw from the project at any stage. Any information already obtained from you will be destroyed.</p>
-                    
-                    
+
+
                     <p>Your decision whether to take part or not to take part, or to take part and then withdraw, will not affect your relationship with your university or with the teacher accreditation agencies. Please notify the researcher if you decide to withdraw from this project.</p>
-                    
-                    
+
+
                     <p>Should you have any queries regarding the progress or conduct of this research, you can contact the principal researcher:</p>
-                    
+
                     <p><strong>Dr Nick Kelly</strong><br>
                     Australian Digital Futures Institute<br>
                     Y303, USQ, Toowoomba<br>
                     +61 7 4631 2718</p>
-                    
-                    
+
+
                    <p> If you have any ethical concerns with how the research is being conducted or any queries about your rights as a participant please feel free to contact the University of Southern Queensland Ethics Officer on the following details.</p>
-                    
+
                     <p><strong>Ethics and Research Integrity Officer</strong>
                     Office of Research and Higher Degrees<br>
                     University of Southern Queensland<br>
@@ -582,7 +613,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                     Ph: +61 7 4631 2690<br>
                     Email: <a href="mailto:ethics@usq.edu.au">ethics@usq.edu.au </a>
                     </p>
-                    
+
                     <p>By clicking to agree I confirm that I have read and agree to the following statements:</p>
                     <ul>
                       <li>I have read the Participant Information Sheet and the nature and purpose of the research project has been explained to me. I understand and agree to take part.</li>
@@ -592,19 +623,19 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                       <li>I understand that while information gained during the study may be published, I will not be identified and my personal results will remain confidential.</li>
                       <li>I understand that the data from this project will be securely stored for a minimum of five years.</li>
                     </ul>
-                    
+
                     <p>This information about consent can be found at any time in the “about” section of the website.</p>
                 </div>
             </div>
-            
+
             <div class="modal-footer">
             	<div class="row">
                 	 <div class="col-sm-8 col-sm-offset-2">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>	
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 	</div>
                 </div>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -613,13 +644,13 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 <div class="modal" id="modalWhoAreWe" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-        
+
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h3 class="modal-title" id="myModalLabel">Who Are We?</h3>
             </div>
-            
+
             <div class="modal-body">
             	<hr>
                 <div class="modal-body-scroll">
@@ -638,7 +669,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 							<li>Central Queensland University (CQU).</li>
 					</p>
 					<p>
-						The TeachConnect platform instance has been developed as a collaboration between Step Up and Connected Communities Research Initiative. Step Up is about transforming mathematics and science pre-service secondary education in Queensland, OLT Grant MS13-3184. The TeachConnect platform instance is powered by the Connected Communities platform. 
+						The TeachConnect platform instance has been developed as a collaboration between Step Up and Connected Communities Research Initiative. Step Up is about transforming mathematics and science pre-service secondary education in Queensland, OLT Grant MS13-3184. The TeachConnect platform instance is powered by the Connected Communities platform.
 						</p><p>
 						The Connected Communities platform is a product of the Connected Communities Research Initiative conducted by the Service Science Discipline, QUT. The research undertaken by the Connected Communities Research Initiative is partially funded by ARC Linkage Grant LP140101062.
 					</p>
@@ -655,24 +686,24 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 							<li>Dr Rune Rasmussen, QUT</li>
 						</ul>
 					</p>
-					
+
                     <p><a href="http://nickkellyresearch.com/">Nick Kelly</a> is a Research Fellow at the University of Southern Queensland.</p>
-    
+
                     <p><a href="https://au.linkedin.com/pub/steven-kickbusch/36/679/405">Steven Kickbusch</a> is a Learning Designer at the Queensland University of Technology.</p>
-    
+
                     <p><a href="https://au.linkedin.com/in/benmaggacis">Ben Maggacis</a> is a full stack web developer.</p>
-    
+
                     <p><a href="http://staff.qut.edu.au/staff/russelnc/">Nick Russell</a> is a Principal Research Fellow at the Queensland University of Technology.</p>
-					
+
 					<p><a href="http://staff.qut.edu.au/staff/rasmussr/">Rune Rasmussen</a> is a Lecturer at the Queensland University of Technology.</p>
-					
+
 					<p>
 					Design for TeachConnect provided by <a href="http://huntedhive.com/">HuntedHive</a>.
 					</p>
 					<p>
 					Initial work on the project was made possible by seed funding and support from the Australian Government's "Digital Futures" Collaborative Research Network, USQ.
 					</p>
-                    
+
 					<p>
 						<strong>References about TeachConnect</strong>
 					</p>
@@ -680,11 +711,11 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 						<li>Clara M., Kelly N., Mauri T. and Danaher P. (In press). Challenges of teachers’ practice-oriented virtual communities for enabling reflection, Asia-Pacific Journal of Teacher Education </li>
 						<li>Kelly N., Reushle S., Chakrabarty S. and Kinnane A. (2014). Augmenting the support for pre-service teachers into practice through large online communities of knowledge-sharing, Australian Journal of Teacher Education 39(4), pp. 68-82 [<a href="http://ro.ecu.edu.au/ajte/vol39/iss4/4/">link</a>]</li>
 						<li>Kelly, N. (2013). An opportunity to support beginning teachers in the transition from higher education into practice, Proceedings of ASCILITE 2013, Sydney [<a href="http://eprints.usq.edu.au/24188">link</a>]</li>
-						
+
 					</p>
-            	</div> 
+            	</div>
             </div>
-            
+
             <div class="modal-footer">
             	<div class="row">
                 	 <div class="col-sm-8 col-sm-offset-2">
@@ -696,7 +727,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
     </div>
 </div>
 <script type="text/javascript">
-    
+
     /**
      * Check to see if IE is being used
      */
@@ -712,7 +743,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
         } else {
             $("#ie-alert-message").hide();
         }
-        
+
         return false;
     }
 
@@ -734,7 +765,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
             $('#register-form').removeClass('bounceInLeft');
             $('#app-title').removeClass('fadeIn');
     <?php } ?>
-    
+
         // Shake panel after wrong validation
     <?php if ($form->errorSummary($registerModel) != null) { ?>
             $('#register-form').removeClass('bounceInLeft');
@@ -743,14 +774,14 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
             $('#app-title').removeClass('fadeIn');
     <?php } ?>
 
-        
+
 	// Hide responsive menu on tap (on small screens only)
 	$('.nav a').on('click', function(){
 		if( $('.outside .navbar-collapse').css('background-color') == 'rgb(32, 179, 176)' )  {
 			$(".navbar-toggle").click();
 		}
 	});
-	
+
 	// Initialize custom scrollbars
 	(function($){
         $(window).load(function(){
@@ -780,15 +811,15 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 
         // Submit email
         var mailgunURL;
-         
+
         mailgunURL = '<?php echo Yii::app()->theme->baseUrl; ?>/mail.php';
-         
+
         $('#mailgun').on('submit',function(e) {
           e.preventDefault();
-         
+
           $('#mailgun *').fadeOut(200);
           $('#mailgun').prepend('Your submission is being processed...');
-         
+
           $.ajax({
             type     : 'POST',
             cache    : false,
@@ -802,24 +833,32 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
               console.log('Silent failure.');
             }
           });
-         
+
           return false;
-         
+
         });
-         
+
         function responseSuccess(data) {
-         
+
           data = JSON.parse(data);
-         
+
           if(data.status === 'success') {
             $('#mailgun').html('Submission sent succesfully.');
           } else {
             $('#mailgun').html('Submission failed, please contact directly.');
           }
-         
+
         }
-        
-        
+
+        setTimeout(function(){
+            $(".subject_area .dropdown-menu li a").on("click",function() {
+                $(this).parent("li").toggleClass("selected");
+            });
+
+            $(".SubjectAreaText").text($(".subject_area .btn").attr("title"));
+        }, 1000);
+
+
             $("#account-register-form").on("submit",function (data) {
                if($("#account-register-form .errorMessage").css("display") == "none") {
                    var email_input = $("#AccountRegisterForm_email").clone();
@@ -829,29 +868,43 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                    $("#modalRegister").modal('hide');
                    $("#modalSecondModal").modal("show");
                }
-               
+
                return false;
             });
 
-            function  addEmptyInput(curr) {
-                return '<input name="'+ curr.attr('name') +'" type="text" data-type="'+ curr.data('type') +'" />';
-            }
+            var inputHidden = '<div id="teacherlevel-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right"></i></div>';
 
             $(".manage_reg").change(function() {
                 if($(this).val() == "other") {
-                    $(this).parent(".form-group").append('<input name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" />');
+                    $(this).parent(".form-group").append(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" /></div></div>');
                 } else {
                     if($("input[data-type="+ $(this).data('type') +"]")) {
-                        $("input[data-type="+ $(this).data('type') +"]").remove();
+                        $("input[data-type="+ $(this).data('type') +"]").parents("#teacherlevel-other").remove();
                     }
                 }
             });
 
             $(".manage_reg").each(function(index){
                 if($(this).val() == "other") {
-                    $(this).parent(".form-group").append('<input name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" />');
+                    $(this).parent(".form-group").append(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" /></div></div>');
                 }
-            })
+            });
+
+            $("#account-register-form-second").submit(function() {
+               $.ajax({
+                   url     : $(this).attr("action"),
+                   data    : $(this).serialize(),
+                   type    : 'POST',
+                   success : function(data) {
+                       var object = JSON.parse(data);
+                        if(object.flag) {
+                            $("#modalSecondModal").find(".blockErrors").html(object.errors);
+                        }
+                   },
+               });
+
+                return false;
+            });
 	});
-	
+
 </script>

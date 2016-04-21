@@ -107,9 +107,6 @@ class CustomsController extends Controller
         }
 
         $string = preg_replace("/((&&|||) email_domain = [\'\"](.*?)[\'\"])/i", "", $string);
-        $_POST['ManageRegistration']['teacher_type'] = 'good';
-        $_POST['ManageRegistration']['some_type'] = 'asd';
-        $_POST['ManageRegistration']['subject_area'] = 'mathematics';
         preg_match_all("/(([a-z0-9_]*) = \"(.*?)\")/i", $string, $array, PREG_SET_ORDER);
         $return = $this->deleteZeroColumnInArray($array);
         foreach ($return as $item) {
