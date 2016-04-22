@@ -14,8 +14,9 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 <style>
     .blockErrors {
         width: 100%;
+        display:none;
         text-align: center;
-        margin-top: -23px;
+        margin-top: -44px;
     }
 </style>
 <div class="SubjectAreaText hidden"></div>
@@ -289,8 +290,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                 ?>
             <div class="modal-body">
 
-
-                <p class="lead text-center">
+                <p class="lead text-center" style="font-size: 16px !important;">
                     <span class="lead-small">Step 1 of 2</span><br>
                     <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your primary institutional e-mail address below."); ?>
                 </p>
@@ -307,7 +307,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                                 'class' => 'form-control',
                                 'required' => 'true',
                                 'type' => 'email',
-                                'placeholder' => Yii::t('UserModule.views_auth_login', 'email')
+                                'placeholder' => Yii::t('UserModule.views_auth_login', 'Enter your primary e-mail address *')
                                 )
                             );
                         ?>
@@ -317,7 +317,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 
                 <div class="row">
                     <div class="col-sm-8 col-sm-offset-2">
-                        <div class="terms-box">
+                        <div class="terms-box" style='height: 130px;'>
                             <h4>Terms &amp; Conditions</h4>
                             <p>
                                 <strong>HREC Approval Number</strong>: H14REA138<br>
@@ -369,13 +369,16 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                		</div>
                </div>
 
-               <div class="row">
-               		<div class="col-sm-8 col-sm-offset-2">
-                       <div class="checkbox">
+                <div class="row">
+                    <div class="col-sm-8 col-sm-offset-2">
+                        <div class="checkbox">
                             <label>
-                              <input type="checkbox" required> I agree to the above terms &amp; conditions
+                                <input type="checkbox" required> I agree to the above terms &amp; conditions *
                             </label>
                         </div>
+                    </div>
+                    <div class="col-sm-8 col-sm-offset-2 row-padding-xs text-center">
+                        <small>* required fields</small>
                     </div>
                 </div>
 
@@ -406,10 +409,11 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                         aria-hidden="true">&times;</span></button>
                 <h3 class="modal-title" id="myModalLabel"><?php echo Yii::t('UserModule.views_auth_login', '<strong>
                     Join</strong> the TeachConnect Community') ?></h3>
-                <p class="lead text-center">
+                <p class="lead text-center" style="font-size: 16px !important;">
                     <span class="lead-small">Step 2 of 2</span><br>
                     <?php echo Yii::t('UserModule.views_auth_login', "Please provide some additional information so we can add you to the correct circle."); ?>
                 </p>
+                <br />
             </div>
 
                 <?php
@@ -470,7 +474,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                         </div>
 
                         <div class="form-group col-sm-8 col-sm-offset-2">
-                        <?php echo $form->dropDownList($manageReg, 'subject_area', LogicEntry::getDropDownDepend(), [
+                        <?php echo $form->dropDownList($manageReg, 'subject_area', []/*LogicEntry::getDropDownDepend()*/, [
                             'class' => 'manage_reg subject_area selectpicker form-control show-tick',
                             'data-type' => ManageRegistration::TYPE_SUBJECT_AREA,
                             'multiple title' => "Select subject area(s) " . LogicEntry::getRequired(ManageRegistration::TYPE_SUBJECT_AREA) . "...",
@@ -486,10 +490,11 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                         ]) ?>
                         </div>
                 </div>
+                <div class="col-sm-8 col-sm-offset-2 row-padding-xs text-center">
+                    <small>* required fields</small>
+                </div>
             </div>
-            <div class="col-sm-8 col-sm-offset-2 row-padding-xs text-center">
-                <small>* required fields</small>
-            </div>
+
             <div class="modal-footer">
             	<div class="row">
                     <div class="col-sm-8 col-sm-offset-2">
@@ -876,7 +881,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 
             $(".manage_reg").change(function() {
                 if($(this).val() == "other") {
-                    $(this).parent(".form-group").append(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" /></div></div>');
+                    $(this).parent(".form-group").after(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" /></div></div>');
                 } else {
                     if($("input[data-type="+ $(this).data('type') +"]")) {
                         $("input[data-type="+ $(this).data('type') +"]").parents("#teacherlevel-other").remove();
@@ -886,7 +891,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 
             $(".manage_reg").each(function(index){
                 if($(this).val() == "other") {
-                    $(this).parent(".form-group").append(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" /></div></div>');
+                    $(this).parent(".form-group").after(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" /></div></div>');
                 }
             });
 
@@ -896,9 +901,15 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                    data    : $(this).serialize(),
                    type    : 'POST',
                    success : function(data) {
-                       var object = JSON.parse(data);
+                        var object = JSON.parse(data);
+                        if(object.flag == "redirect") {
+                           window.location.href = '<?= Yii::app()->createUrl("/"); ?>';
+                        }
                         if(object.flag) {
+                            $(".blockErrors").fadeIn();
                             $("#modalSecondModal").find(".blockErrors").html(object.errors);
+                        } else {
+                            $(".blockErrors").fadeOut();
                         }
                    },
                });

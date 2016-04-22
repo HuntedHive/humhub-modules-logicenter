@@ -65,7 +65,7 @@ class PopupController extends CController
                     $registerModel->addError("AccountRegisterForm_email", "Error in parse not found email_domain");
                 }
 
-                if(!preg_match("/^[\w\W]*.(" . str_replace(" ","|", $domain) . ")$/", $_POST['AccountRegisterForm']['email'])) {
+                if(!preg_match("/^[\w\W]*[.](" . str_replace(" ","|", $domain) . ")$/", $_POST['AccountRegisterForm']['email'])) {
                     $registerModel->addError("AccountRegisterForm_email", "Only: " . $domain);
                 }
 
@@ -80,8 +80,44 @@ class PopupController extends CController
         if (Yii::app()->request->isAjaxRequest) {
         } else {
 //            echo $this->render('login-updatedui', array('model' => $model, 'registerModel' => $registerModel, 'canRegister' => $canRegister, 'manageReg' => $manageReg))
-            echo $this->render('login', array('model' => $model, 'registerModel' => $registerModel, 'canRegister' => $canRegister, 'manageReg' => $manageReg));
+            echo $this->render('login', array('model' => $model,
+                'registerModel' => $registerModel,
+                'canRegister' => $canRegister,
+                'manageReg' => $manageReg)
+            );
         }
+    }
+
+    protected function parseExpression($string)
+    {
+        $errors = [];
+        $string = strtolower($string);
+        $M_Reg = $_POST['ManageRegistration'];
+        $string = preg_replace("/((&&|||) email_domain = [\'\"](.*?)[\'\"])/i", "", $string);
+        preg_match_all("/(([a-z0-9_]*)[\s]{0,1}=[\s]{0,1}\"(.*?)\")/i", $string, $array, PREG_SET_ORDER);
+        $return = $this->deleteZeroColumnInArray($array);
+
+        foreach ($return as $item) {
+            $expressionItem = trim($item[1]);
+            $keyItem = trim($item[2]);
+            $valueItem = trim($item[3]);
+
+            if(isset($M_Reg[$keyItem]) && $keyItem != "email_domain" && $keyItem != "subject_area") {
+                if(!in_array($M_Reg[$keyItem], explode(" ", $valueItem))) {
+                    $errors[$keyItem] = $M_Reg[$keyItem] . " not in array " . '",["' . str_replace(' ', '","', $valueItem) . '"]';
+                }
+            }
+
+            if(isset($M_Reg['subject_area']) && $keyItem == "subject_area") { // because it dependency and this array given
+                foreach ($M_Reg['subject_area'] as $subjectItem) {
+                    if(!in_array($subjectItem, explode(" ", $valueItem))) {
+                        $errors['subject_area'][] = $subjectItem . ' not in ' . '["' . str_replace(' ', '","', $valueItem) . '"]';
+                    }
+                }
+            }
+        }
+
+        return !empty($errors)?false:true;
     }
 
 
@@ -94,26 +130,10 @@ class PopupController extends CController
         $thenRegular = $this->thenRegular(explode("then", $logic)[1])[0][1];
         $if = '';
         $mailReg = '';
-        foreach ($ifRegular as $reg) {
-            if(isset($reg[1]) && isset($reg[2]) && isset($reg[3]) && isset($_POST['ManageRegistration'][trim($reg[2])])) {
-                if (trim($reg[2]) != "email_domain" && trim($reg[2]) != "subject_area") {
-                    $if .= $this->_o($reg[1]) . ' ' . 'in_array("' . $_POST['ManageRegistration'][trim($reg[2])] . '",["' . str_replace(' ', '","', trim($reg[3])) . '"]) ';
-                }
-                if(trim($reg[2]) == "subject_area" && !empty($_POST['ManageRegistration']['subject_area'])) {
-                    foreach ($_POST['ManageRegistration']['subject_area'] as $item) {
-                        if(!in_array($item, explode(" ", trim($reg[3])))) {
-                            $if .= "&& false ";
-                            break;
-                        }
-                    }
-                }
-            } else {
-                $mailReg = $reg[2];
-            }
-        }
 
+        $if = $this->parseExpression(explode("then", $logic)[0]);
         $domain = $this->returnEmail($ifRegular);
-        if(preg_match("/^[\w\W]*.(" . str_replace(" ","|", $mailReg) . ")$/", $_POST['email_domain']) && !is_null($domain)) {
+        if(!is_null($domain) && preg_match("/^[\w\W]*.(" . str_replace(" ","|", $mailReg) . ")$/", $_POST['email_domain'])) {
             $user = new User;
             $user->username = $_POST['email_domain'];
             $user->email = $_POST['email_domain'];
@@ -139,7 +159,7 @@ class PopupController extends CController
                 }
             } else {
                 $space = Space::model()->findByAttributes(['name' => $logic_else]);
-                if (empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
+                if (!empty($space) && empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
                     $newMemberSpace = new SpaceMembership;
                     $newMemberSpace->space_id = $space->id;
                     $newMemberSpace->user_id = $user->id;
@@ -154,15 +174,11 @@ class PopupController extends CController
 
             if ($model->validate() && $model->login()) {
                 $user = User::model()->findByPk(Yii::app()->user->id);
-
-                if (Yii::app()->request->isAjaxRequest) {
-                    $this->htmlRedirect(Yii::app()->user->returnUrl);
-                } else {
-                    $this->redirect(Yii::app()->user->returnUrl);
-                }
+                echo json_encode(['flag' => 'redirect']);
+                Yii::app()->end();
             }
         }
-        return $this->redirect(['/']);
+        echo json_encode(['flag' => 'redirect']);
     }
 
     public function validateRequredFields()
@@ -171,8 +187,12 @@ class PopupController extends CController
         $data = $_POST['ManageRegistration'];
         $errors = [];
         foreach ($required as $requiredItem) {
-            if($requiredItem->value_text == 1 && empty($data[$requiredItem->value]))
+            if(!empty($requiredItem->value) && $requiredItem->value_text == 1 && isset($data[$requiredItem->value]) && empty($data[$requiredItem->value]))
             {
+                $errors[] = $requiredItem->value . " is required";
+            }
+
+            if(!isset($data[$requiredItem->value]) && $requiredItem->value_text == 1) {
                 $errors[] = $requiredItem->value . " is required";
             }
         }
@@ -195,19 +215,6 @@ class PopupController extends CController
         $array= [];
         preg_match_all("/[\"|'](.*?)[\"|']/i", $string, $array, PREG_SET_ORDER);
         return $this->deleteZeroColumnInArray($array);
-    }
-
-    protected function _o($operator)
-    {
-        $operator = strtolower($operator);
-        switch($operator) {
-            case 'and':
-                return '&&';
-            case 'or':
-                return '||';
-            case 'if':
-                return '';
-        }
     }
 
     protected function deleteZeroColumnInArray($array)

@@ -317,7 +317,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                             </div>
                    		 	</div>
                 		</div>
-                        <div class="row">
+                <div class="row">
                     <div class="col-sm-8 col-sm-offset-2">
                         <div class="terms-box">
                             <h4>Terms &amp; Conditions</h4>
