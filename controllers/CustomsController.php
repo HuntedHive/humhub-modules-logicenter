@@ -6,13 +6,16 @@ class CustomsController extends Controller
 {
     
     public $subLayout = "application.modules_core.admin.views._layout";
-    
-    
+
     /**
      * Returns a List of Users
      */
     public function actionBasic()
     {
+        if(!Yii::app()->user->isAdmin()) {
+            return $this->redirect(['/']);
+        }
+
         Yii::import('admin.forms.*');
 
         $form = new BasicSettingsLogicForm;

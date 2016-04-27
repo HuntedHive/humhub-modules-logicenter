@@ -146,25 +146,31 @@ class PopupController extends CController
 
             if ($if) {
                 $then = explode(",", $thenRegular);
-
-                foreach ($then as $circle) {
-                    $space = Space::model()->findByAttributes(['name' => $circle]);
-                    if (empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
-                        $newMemberSpace = new SpaceMembership;
-                        $newMemberSpace->space_id = $space->id;
-                        $newMemberSpace->user_id = $user->id;
-                        $newMemberSpace->status = SpaceMembership::STATUS_MEMBER;
-                        $newMemberSpace->save();
+                if(!empty($then)) {
+                    foreach ($then as $circle) {
+                        $space = Space::model()->findByAttributes(['name' => trim($circle)]);
+                        if (empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
+                            $newMemberSpace = new SpaceMembership;
+                            $newMemberSpace->space_id = $space->id;
+                            $newMemberSpace->user_id = $user->id;
+                            $newMemberSpace->status = SpaceMembership::STATUS_MEMBER;
+                            $newMemberSpace->save();
+                        }
                     }
                 }
             } else {
-                $space = Space::model()->findByAttributes(['name' => $logic_else]);
-                if (!empty($space) && empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
-                    $newMemberSpace = new SpaceMembership;
-                    $newMemberSpace->space_id = $space->id;
-                    $newMemberSpace->user_id = $user->id;
-                    $newMemberSpace->status = SpaceMembership::STATUS_MEMBER;
-                    $newMemberSpace->save();
+                $logic_else_string = explode(",", $logic_else);
+                if(!empty($logic_else_string)) {
+                    foreach ($logic_else_string as $circle) {
+                        $space = Space::model()->findByAttributes(['name' => trim($circle)]);
+                        if (empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
+                            $newMemberSpace = new SpaceMembership;
+                            $newMemberSpace->space_id = $space->id;
+                            $newMemberSpace->user_id = $user->id;
+                            $newMemberSpace->status = SpaceMembership::STATUS_MEMBER;
+                            $newMemberSpace->save();
+                        }
+                    }
                 }
             }
 
@@ -173,7 +179,6 @@ class PopupController extends CController
             $model->password = $_POST['email_domain'];
 
             if ($model->validate() && $model->login()) {
-                $user = User::model()->findByPk(Yii::app()->user->id);
                 echo json_encode(['flag' => 'redirect']);
                 Yii::app()->end();
             }
@@ -239,7 +244,7 @@ class PopupController extends CController
 
         return null;
     }
-    
+
     public function actionGetDependTeacherType()
     {
         $name = trim($_POST['nameTeacherType']);
@@ -253,19 +258,21 @@ class PopupController extends CController
                 $list = $this->toUl(CHtml::listData($data, 'name', 'name'));
                 $options = $this->toOptions(CHtml::listData($data, 'name', 'name'));
             } else {
-                $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
+//                $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
             }
         } else {
-            $idByName = ManageRegistration::model()->find('name="' . $name . '"');
-            if (!empty($idByName)) {
-                $list = $this->toUl(CHtml::listData(ManageRegistration::model()->findAll('depend=' . $idByName->id), 'name', 'name'));
-                $options = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('depend=' . $idByName->id), 'name', 'name'));
-            } else {
-                $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
-            }
+            $idByName = ManageRegistration::model()->find('name="' . $name . '" and type=' . ManageRegistration::TYPE_TEACHER_TYPE);
+                if (!empty($idByName)) {
+                    $list = $this->toUl(CHtml::listData(ManageRegistration::model()->findAll('depend=' . $idByName->id), 'name', 'name'));
+                    $options = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('depend=' . $idByName->id), 'name', 'name'));
+                } else {
+//                    $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
+                }
         }
         echo json_encode(['li' => $list, 'option' => $options]);
     }
+
+
 
     public function toOptions($array)
     {

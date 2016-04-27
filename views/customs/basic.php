@@ -49,13 +49,25 @@
         <strong><?php echo Yii::t('AdminModule.views_setting_index', 'Matching Logic'); ?></strong>
         <div class="form-group">
             <p class="help-block">
-				<?php echo Yii::t('AdminModule.views_setting_index', 'Custom if-then logic for default user space.'); ?></p>
+				<?php echo Yii::t('AdminModule.views_setting_index', 'Custom if-then logic for default user space.'); ?>
+            </p>
+            <p class="help-block">
+                <i style="color:#0A246A;font-size:10px">
+                    <?php echo Yii::t('AdminModule.views_setting_index', 'Help: IF teacher_type = "math math2" and teacher_level = "level" and subject_area = "math math2" and email_domain = "edu.au" THEN insert into "Welcome Space, default, some-some"'); ?>
+                </i>
+            </p>
             <?php echo $form->textArea($model, 'logic_enter', array('class' => 'form-control form-control-code', 'placeholder' => 'Enter if-then matching logic...', 'spellcheck' => 'false')); ?>
         </div>
         
         <div class="form-group">
             <p class="help-block">
-				<?php echo Yii::t('AdminModule.views_setting_index', 'Custom else logic for default user space.'); ?></p>
+				<?php echo Yii::t('AdminModule.views_setting_index', 'Custom else logic for default user space.'); ?>
+            </p>
+            <p class="help-block">
+                <i style="color:#0A246A;font-size:10px">
+                    <?php echo Yii::t('AdminModule.views_setting_index', 'Help: Welcome Space, default, some, callback'); ?>
+                </i>
+            </p>
             <?php echo $form->textArea($model, 'logic_else', array('class' => 'form-control form-control-code', 'placeholder' => 'Enter else matching logic...', 'spellcheck' => 'false')); ?>
         </div>
         
