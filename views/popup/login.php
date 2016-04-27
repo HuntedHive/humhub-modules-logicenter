@@ -436,7 +436,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                                 "title" => "Select teacher level " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_LEVEL) . "...",
                         ]); ?>
                         </div>
-                        <?php echo $form->error($registerModel, 'teacher_level'); ?>
+
                         <div class="form-group col-sm-8 col-sm-offset-2">
                         <?php echo $form->dropDownList($manageReg, 'teacher_type', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_TYPE), [
                             'class' => 'manage_reg teacher_type selectpicker form-control show-tick',
@@ -446,7 +446,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                                 'type'=>'POST',
                                 'url'=> \Yii::app()->createUrl('/logicenter/popup/getDependTeacherType'),
                                 'update'=>'.subject_area',
-                                'data'=> ['nameTeacherType' => 'js:$(this).val()', 'CSRF_TOKEN' =>'4c38ee055f892da594c264d17bdfc6c6f014d6ee', 'type' => 'js:$(this).data("type")'],
+                                'data'=> ['nameTeacherType' => 'js:$(this).val()', 'CSRF_TOKEN' => Yii::app()->request->csrfToken, 'type' => 'js:$(this).data("type")'],
                                 'success' => 'js:function(data) {
                                     $(".subject_area .dropdown-menu .inner").empty();
                                     $(".subject_area .dropdown-menu .inner").append(JSON.parse(data).li);
@@ -889,11 +889,11 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                 }
             });
 
-            $(".manage_reg").each(function(index){
-                if($(this).val() == "other") {
-                    $(this).parent(".form-group").after(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" /></div></div>');
-                }
-            });
+//            $(".manage_reg").each(function(index){
+//                if($(this).val() == "other") {
+//                    $(this).parent(".form-group").after(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" /></div></div>');
+//                }
+//            });
 
             $("#account-register-form-second").submit(function() {
                $.ajax({
