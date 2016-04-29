@@ -34,7 +34,7 @@
   padding-bottom: 25px;
 }
 
-#account-register-form .modal-body .lead{
+#account-register-form .modal-body .lead, #modalSecondModal .modal-content .lead{
 	opacity:0.5 !important;
 }
 

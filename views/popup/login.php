@@ -407,7 +407,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in - Teach
                     Join</strong> the TeachConnect Community') ?></h3>
                 <p class="lead text-center" style="font-size: 16px !important;">
                     <span class="lead-small">Step 2 of 2</span><br>
-                    <?php echo Yii::t('UserModule.views_auth_login', "Please provide some additional information so we can add you to the correct circle."); ?>
+                    <?php echo Yii::t('UserModule.views_auth_login', "Please provide some additional information<br> so we can add you to the correct circle."); ?>
                 </p>
                 <br />
             </div>

@@ -389,7 +389,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                     <div class="item">
                         <p class="lead text-center">
                             <span class="lead-small">Step 2 of 2</span><br>
-                            <?php echo Yii::t('UserModule.views_auth_login', "Please provide some additional information so we can add you to the correct circle."); ?>
+                            <?php echo Yii::t('UserModule.views_auth_login', "Please provide some additional information<br> so we can add you to the correct circle."); ?>
                         </p>
                         <div class="row">
                             	<div class="form-group col-sm-8 col-sm-offset-2">
