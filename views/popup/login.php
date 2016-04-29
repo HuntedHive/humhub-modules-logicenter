@@ -9,16 +9,12 @@
  * @package humhub.modules_core.user.views
  * @since 0.5
  */
-$this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong> sign in');
+$this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in - TeachConnect');
 ?>
-<style>
-    .blockErrors {
-        width: 100%;
-        display:none;
-        text-align: center;
-        margin-top: -44px;
-    }
-</style>
+
+<link rel="stylesheet" type="text/css"
+         href="<?php echo $this->module->assetsUrl; ?>/css/logicenter.css"/>
+
 <div class="SubjectAreaText hidden"></div>
 <div class="container-fluid text-center login-container-home">
 
@@ -292,7 +288,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
 
                 <p class="lead text-center" style="font-size: 16px !important;">
                     <span class="lead-small">Step 1 of 2</span><br>
-                    <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your primary institutional e-mail address below."); ?>
+                    <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your primary institutional<br> e-mail address below."); ?>
                 </p>
 
                 <div id="ie-alert-message" class="alert alert-danger" style="display:none;">

@@ -289,7 +289,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong
                     <div class="item">
                         <p class="lead text-center">
                             <span class="lead-small">Step 1 of 2</span><br>
-                            <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your primary institutional e-mail address below."); ?>
+                            <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering yourprimary institutional <br> e-mail address below."); ?>
                         </p>
                         <div class="row">
                             <div class="col-xs-12">

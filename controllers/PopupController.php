@@ -75,7 +75,7 @@ class PopupController extends CController
                 }
             }
         }
-
+Yii::import('application.modules.registration.models.ManageRegistration');
         $manageReg = new ManageRegistration;
         if (Yii::app()->request->isAjaxRequest) {
         } else {

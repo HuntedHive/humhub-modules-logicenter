@@ -33,3 +33,14 @@
 .modal .owl-carousel.owl-carousel-registration .owl-stage-outer {
   padding-bottom: 25px;
 }
+
+#account-register-form .modal-body .lead{
+	opacity:0.5 !important;
+}
+
+.blockErrors {
+        width: 100%;
+        display:none;
+        text-align: center;
+        margin-top: -44px;
+    }
