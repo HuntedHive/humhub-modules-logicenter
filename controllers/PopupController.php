@@ -149,7 +149,7 @@ class PopupController extends CController
                 if(!empty($then)) {
                     foreach ($then as $circle) {
                         $space = Space::model()->findByAttributes(['name' => trim($circle)]);
-                        if (empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
+                        if (!empty($space) && empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
                             $newMemberSpace = new SpaceMembership;
                             $newMemberSpace->space_id = $space->id;
                             $newMemberSpace->user_id = $user->id;
@@ -163,7 +163,7 @@ class PopupController extends CController
                 if(!empty($logic_else_string)) {
                     foreach ($logic_else_string as $circle) {
                         $space = Space::model()->findByAttributes(['name' => trim($circle)]);
-                        if (empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
+                        if (!empty($space) && empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
                             $newMemberSpace = new SpaceMembership;
                             $newMemberSpace->space_id = $space->id;
                             $newMemberSpace->user_id = $user->id;
