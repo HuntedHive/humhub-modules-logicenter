@@ -851,8 +851,6 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
 
         }
 
-        $("#modalSecondModal").modal('show');
-
         setTimeout(function(){
             $(".subject_area .dropdown-menu li a").on("click",function() {
                 $(this).parent("li").toggleClass("selected");
