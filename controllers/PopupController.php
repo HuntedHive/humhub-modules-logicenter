@@ -53,33 +53,78 @@ class PopupController extends CController
 
         // Registration enabled?
         if ($canRegister) {
-            
             // if it is ajax validation request
-            if (isset($_POST['ajax'])) {
-                $errors = CActiveForm::validate($registerModel);
+            if (Yii::app()->request->isAjaxRequest) {
+                $registerModel->attributes = $_POST['AccountRegisterForm'];
+                $registerModel->validate();
 
                 $logic = strtolower(HSetting::GetText("logic_enter"));
                 $ifRegular = $this->ifRegular(explode("then", $logic)[0]);
                 $domain = $this->returnEmail($ifRegular);
-                if(is_null($domain)) {
-                    $registerModel->addError("AccountRegisterForm_email", "Error in parse not found email_domain");
-                }
 
-                if(!preg_match("/^[\w\W]*[.](" . str_replace(" ","|", $domain) . ")$/", $_POST['AccountRegisterForm']['email'])) {
-                    $registerModel->addError("AccountRegisterForm_email", "Only: " . $domain);
-                }
+                if(!is_null($domain)) {
 
-                if (!empty($registerModel->hasErrors())) {
-                    echo json_encode($registerModel->getErrors());
-                    Yii::app()->end();
+                    if(!preg_match("/^[\w\W]*[.](" . str_replace(" ","|", $domain) . ")$/", $_POST['AccountRegisterForm']['email'])) {
+                        $registerModel->addError("AccountRegisterForm_email", "email only: " . $domain);
+                    }
+
+                    if($registerModel->hasErrors()) {
+                        echo json_encode(
+                            [
+                                'flag' => "error",
+                                'errors' => $this->implodeAssocArray($registerModel->getErrors()),
+                            ]
+                        );
+                        Yii::app()->end();
+                    }
+
+                    echo json_encode(
+                        [
+                            'flag' => "next"
+                        ]
+                    );
+                } else {
+                    if($registerModel->hasErrors()) {
+                        echo json_encode(
+                            [
+                                'flag' => "error",
+                                'errors' => $this->implodeAssocArray($registerModel->getErrors()),
+                            ]
+                        );
+                        Yii::app()->end();
+                    }
+
+                    $usEmail = $_POST['AccountRegisterForm']['email'];
+                    $user = new User;
+                    $user->username = $usEmail;
+                    $user->email = $usEmail;
+                    $user->save();
+
+                    $userPassword = new UserPassword;
+                    $userPassword->user_id = $user->id;
+                    $userPassword->setPassword($usEmail);
+                    $userPassword->save();
+
+                    $model = new AccountLoginForm;
+                    $model->username = $usEmail;
+                    $model->password = $usEmail;
+
+                    if ($model->login()) {
+                        echo json_encode(
+                            [
+                                'flag' => 'redirect',
+                                'location' => Yii::app()->createUrl("/"),
+                            ]
+                        );
+                        Yii::app()->end();
+                    }
                 }
             }
         }
-Yii::import('application.modules.registration.models.ManageRegistration');
+
         $manageReg = new ManageRegistration;
         if (Yii::app()->request->isAjaxRequest) {
         } else {
-//            echo $this->render('login-updatedui', array('model' => $model, 'registerModel' => $registerModel, 'canRegister' => $canRegister, 'manageReg' => $manageReg))
             echo $this->render('login', array('model' => $model,
                 'registerModel' => $registerModel,
                 'canRegister' => $canRegister,
@@ -149,7 +194,7 @@ Yii::import('application.modules.registration.models.ManageRegistration');
                 if(!empty($then)) {
                     foreach ($then as $circle) {
                         $space = Space::model()->findByAttributes(['name' => trim($circle)]);
-                        if (empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
+                        if (!empty($space) && empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
                             $newMemberSpace = new SpaceMembership;
                             $newMemberSpace->space_id = $space->id;
                             $newMemberSpace->user_id = $user->id;
@@ -163,7 +208,7 @@ Yii::import('application.modules.registration.models.ManageRegistration');
                 if(!empty($logic_else_string)) {
                     foreach ($logic_else_string as $circle) {
                         $space = Space::model()->findByAttributes(['name' => trim($circle)]);
-                        if (empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
+                        if (!empty($space) && empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
                             $newMemberSpace = new SpaceMembership;
                             $newMemberSpace->space_id = $space->id;
                             $newMemberSpace->user_id = $user->id;
@@ -178,12 +223,59 @@ Yii::import('application.modules.registration.models.ManageRegistration');
             $model->username = $user->email;
             $model->password = $_POST['email_domain'];
 
+            $this->addOthertoList();
+
             if ($model->validate() && $model->login()) {
-                echo json_encode(['flag' => 'redirect']);
+                echo json_encode(
+                    [
+                        'flag' => 'redirect'
+                    ]
+                );
                 Yii::app()->end();
             }
         }
-        echo json_encode(['flag' => 'redirect']);
+
+        echo json_encode(
+            [
+                'flag' => 'redirect',
+            ]
+        );
+        Yii::app()->end();
+    }
+
+    protected function implodeAssocArray($array)
+    {
+        $string = "<div class='errorsSignup'>";
+        if(is_array($array) && !empty(array_filter($array))) {
+            foreach ($array as $key => $value) {
+                foreach ($value as $item) {
+                    $string.=  $item . "<br />";
+                }
+            }
+        }
+        $string.="</div>";
+
+        return $string;
+    }
+
+    protected function addOthertoList()
+    {
+        $data = $_POST['ManageRegistration'];
+        $typeRever = array_flip(ManageRegistration::$type);
+        if(!empty($data) && is_array($data)) {
+            foreach ($data as $key => $value) {
+                if (isset($typeRever[$key]) && !empty($value) && $key != "subject_area") {
+                    $manageItem = ManageRegistration::model()->findAll('name="' . trim($value) . '"');
+                    if (empty($manageItem)) {
+                        $manage = new ManageRegistration;
+                        $manage->name = trim($value);
+                        $manage->type = $typeRever[$key];
+                        $manage->default = ManageRegistration::DEFAULT_DEFAULT;
+                        $manage->save();
+                    }
+                }
+            }
+        }
     }
 
     public function validateRequredFields()

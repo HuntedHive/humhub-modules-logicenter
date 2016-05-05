@@ -9,11 +9,9 @@
  * @package humhub.modules_core.user.views
  * @since 0.5
  */
-$this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in - TeachConnect');
+$this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong> sign in');
+Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logicenter.css');
 ?>
-
-<link rel="stylesheet" type="text/css"
-         href="<?php echo $this->module->assetsUrl; ?>/css/logicenter.css"/>
 
 <div class="SubjectAreaText hidden"></div>
 <div class="container-fluid text-center login-container-home">
@@ -277,24 +275,26 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in - Teach
             <?php if ($canRegister) : ?>
                 <?php
                 $form = $this->beginWidget('CActiveForm', array(
-                    'id' => 'account-register-form',
-                    'enableAjaxValidation'=>true,
-                    'clientOptions' => array(
-                        'validateOnSubmit'=>true,
-                    ),
+                        'id' => 'account-register-form',
                 ));
                 ?>
             <div class="modal-body">
 
                 <p class="lead text-center" style="font-size: 16px !important;">
                     <span class="lead-small">Step 1 of 2</span><br>
-                    <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your primary institutional<br> e-mail address below."); ?>
+                    <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your primary institutional e-mail address below."); ?>
                 </p>
 
                 <div id="ie-alert-message" class="alert alert-danger" style="display:none;">
                     Unfortunately you will not be able to register using Internet Explorer at this time. Please use another browser such as Chrome or Firefox whilst we work on fixing TeachConnect for Internet Explorer.
                 </div>
                 <div class="row">
+                    <div class="form-group col-sm-8 col-sm-offset-2">
+                        <div class="blockErrorsRegister"></div>
+                    </div>
+                </div>
+                <div class="row">
+
                     <div class="form-group col-sm-8 col-sm-offset-2">
                     	<!-- <input class="form-control" id="register-email" required placeholder="Enter your email" name="AccountRegisterForm[email]" value="" type="email"> -->
 
@@ -407,7 +407,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in - Teach
                     Join</strong> the TeachConnect Community') ?></h3>
                 <p class="lead text-center" style="font-size: 16px !important;">
                     <span class="lead-small">Step 2 of 2</span><br>
-                    <?php echo Yii::t('UserModule.views_auth_login', "Please provide some additional information<br> so we can add you to the correct circle."); ?>
+                    <?php echo Yii::t('UserModule.views_auth_login', "Please provide some additional information so we can add you to the correct circle."); ?>
                 </p>
                 <br />
             </div>
@@ -860,15 +860,34 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in - Teach
         }, 1000);
 
 
-            $("#account-register-form").on("submit",function (data) {
-               if($("#account-register-form .errorMessage").css("display") == "none") {
-                   var email_input = $("#AccountRegisterForm_email").clone();
-                   email_input.attr("type", 'hidden');
-                   email_input.attr("name", "email_domain");
-                   $("#account-register-form-second").append(email_input);
-                   $("#modalRegister").modal('hide');
-                   $("#modalSecondModal").modal("show");
-               }
+            $("#account-register-form").on("submit", function (data) {
+                $.ajax({
+                    url     : $(this).attr("action"),
+                    data    : $(this).serialize(),
+                    type    : 'POST',
+                    success: function (data) {
+                        var object = JSON.parse(data);
+                        if(object.flag == "redirect") {
+                            window.location.href = object.location;
+                        }
+
+                        if(object.flag == "error") {
+                            $("#modalRegister").find(".blockErrorsRegister").fadeIn();
+                            $("#modalRegister").find(".blockErrorsRegister").html(object.errors);
+                        } else {
+                            $("#modalRegister").find(".blockErrorsRegister").fadeOut();
+                        }
+
+                        if(object.flag == "next") {
+                            var email_input = $("#AccountRegisterForm_email").clone();
+                            email_input.attr("type", 'hidden');
+                            email_input.attr("name", "email_domain");
+                            $("#account-register-form-second").append(email_input);
+                            $("#modalRegister").modal('hide');
+                            $("#modalSecondModal").modal("show");
+                        }
+                    }
+                })
 
                return false;
             });
@@ -885,11 +904,6 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in - Teach
                 }
             });
 
-//            $(".manage_reg").each(function(index){
-//                if($(this).val() == "other") {
-//                    $(this).parent(".form-group").after(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" /></div></div>');
-//                }
-//            });
 
             $("#account-register-form-second").submit(function() {
                $.ajax({

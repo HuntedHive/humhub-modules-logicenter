@@ -38,9 +38,14 @@
 	opacity:0.5 !important;
 }
 
+.blockErrorsRegister {
+  color:red;
+  text-align: center;
+}
+
 .blockErrors {
-        width: 100%;
-        display:none;
-        text-align: center;
-        margin-top: -44px;
-    }
+  width: 100%;
+  display:none;
+  text-align: center;
+  margin-top: -44px;
+}
