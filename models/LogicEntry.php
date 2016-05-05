@@ -2,9 +2,14 @@
 
 class LogicEntry
 {
-    public static function getDropDown($type)
+    public static function getDropDown($type, $name = "")
     {
-        return array_merge(CHtml::listData(ManageRegistration::model()->findAll('type='. $type . " ORDER BY updated_at DESC"), 'name', 'name'), ['other' => 'other']);
+        if(empty($name)) {
+            return array_merge(CHtml::listData(ManageRegistration::model()->findAll('type='. $type . " ORDER BY updated_at DESC"), 'name', 'name', 'group'), ['other' => 'other']);
+        } else {
+            return [$name => array_merge(CHtml::listData(ManageRegistration::model()->findAll('type='. $type . " ORDER BY updated_at DESC"), 'name', 'name', 'group'), ['other' => 'other'])];
+
+        }
     }
 
     public static function getDropDownDepend()

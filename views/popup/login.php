@@ -426,7 +426,7 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
                 </div>
                 <div class="row">
                         <div class="form-group col-sm-8 col-sm-offset-2">
-                        <?php echo $form->dropDownList($manageReg, 'teacher_level', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_LEVEL), [
+                        <?php echo $form->dropDownList($manageReg, 'teacher_level', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_LEVEL, "Select teacher level"), [
                                 'class' => 'manage_reg selectpicker form-control show-tick',
                                 'data-type' => ManageRegistration::TYPE_TEACHER_LEVEL,
                                 "title" => "Select teacher level " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_LEVEL) . "...",
@@ -434,7 +434,7 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
                         </div>
 
                         <div class="form-group col-sm-8 col-sm-offset-2">
-                        <?php echo $form->dropDownList($manageReg, 'teacher_type', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_TYPE), [
+                        <?php echo $form->dropDownList($manageReg, 'teacher_type', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_TYPE, "Select teacher type"), [
                             'class' => 'manage_reg teacher_type selectpicker form-control show-tick',
                             'data-type' => ManageRegistration::TYPE_TEACHER_TYPE,
                             'title' => "Select teacher type " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_TYPE) . "...",
@@ -470,16 +470,16 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
                         </div>
 
                         <div class="form-group col-sm-8 col-sm-offset-2">
-                        <?php echo $form->dropDownList($manageReg, 'subject_area', []/*LogicEntry::getDropDownDepend()*/, [
+                        <?php echo $form->dropDownList($manageReg, 'subject_area', ['Select subject area(s)'=> ["please select teacher type"]]/*LogicEntry::getDropDownDepend()*/, [
                             'class' => 'manage_reg subject_area selectpicker form-control show-tick',
                             'data-type' => ManageRegistration::TYPE_SUBJECT_AREA,
                             'multiple title' => "Select subject area(s) " . LogicEntry::getRequired(ManageRegistration::TYPE_SUBJECT_AREA) . "...",
-                            'multiple'=>'multiple',
+//                            'multiple'=>'multiple',
                         ]) ?>
                         </div>
 
                         <div class="form-group col-sm-8 col-sm-offset-2">
-                        <?php echo $form->dropDownList($manageReg, 'teacher_interest', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_INTEREST), [
+                        <?php echo $form->dropDownList($manageReg, 'teacher_interest', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_INTEREST, "Select teaching interests"), [
                             'class' => 'manage_reg selectpicker form-control show-tick',
                             'data-type' => ManageRegistration::TYPE_TEACHER_INTEREST,
                             'title' => "Select teaching interests " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_INTEREST) . "...",
@@ -850,6 +850,8 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
           }
 
         }
+
+        $("#modalSecondModal").modal('show');
 
         setTimeout(function(){
             $(".subject_area .dropdown-menu li a").on("click",function() {

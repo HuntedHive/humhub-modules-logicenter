@@ -377,7 +377,7 @@ class PopupController extends CController
 
     public function toUl($array)
     {
-        $ul = '';
+        $ul = '<li class="dropdown-header " data-optgroup="1"><span class="text">Select subject area(s)</span></li>';
         $i = 0;
         foreach ($array as $option) {
             $ul.='<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">' . $option . '</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
