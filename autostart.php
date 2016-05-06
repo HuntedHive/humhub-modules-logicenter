@@ -6,8 +6,10 @@ Yii::app()->moduleManager->register(array(
         'application.modules.logicenter.*',
         'application.modules.logicenter.forms.*',
         'application.modules.logicenter.models.*',
+        'application.modules.logicenter.widgets.*',
     ),
     'events' => array(
+        array('class' => 'NotificationAddonWidget', 'event' => 'onInit', 'callback' => array('LogicEvents', 'onLogicNotificationAddonInit')),
     ),
 ));
 ?>

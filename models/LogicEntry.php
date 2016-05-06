@@ -40,4 +40,16 @@ class LogicEntry
             return (!HSetting::model()->find("name='type_manage' AND value='" . ManageRegistration::$type[$type] .  "'")->value_text == 1)?" AND t.default=1":"";
         }
     /* END GROUP */
+
+    /**
+     * return true if user have only one mentorship and home on main page panel will hidden
+     */
+    public static function getStatusHomeOfUser(){
+        $membership = SpaceMembership::GetUserSpaces(Yii::app()->user->id);
+        if(count($membership) <= 1) {
+            return true;
+        }
+        
+        return false;
+    }
 }

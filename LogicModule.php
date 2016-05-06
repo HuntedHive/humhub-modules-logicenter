@@ -12,4 +12,5 @@ class LogicModule extends HWebModule
             'logicenter.forms.*',
         ));
     }
+
 }
