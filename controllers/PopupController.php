@@ -262,6 +262,7 @@ class PopupController extends CController
     {
         $data = $_POST['ManageRegistration'];
         $typeRever = array_flip(ManageRegistration::$type);
+        $dependTeacherTypeId = "";
         if(!empty($data) && is_array($data)) {
             foreach ($data as $key => $value) {
                 if (isset($typeRever[$key]) && !empty($value) && $key != "subject_area") {
@@ -272,6 +273,27 @@ class PopupController extends CController
                         $manage->type = $typeRever[$key];
                         $manage->default = ManageRegistration::DEFAULT_DEFAULT;
                         $manage->save();
+                    }
+                }
+
+                if($key == "teacher_type") {
+                    $existTeacherTypeId = ManageRegistration::model()->find('name="' . trim($value) . '"');
+                    if(!empty($existTeacherTypeId)) {
+                        $dependTeacherTypeId = $existTeacherTypeId->id;
+                    }
+                }
+
+                if(isset($typeRever[$key]) && !empty($value) && $key == "subject_area" && !empty($dependTeacherTypeId)) {
+                    foreach ($value as $itemSubject) {
+                        $manageItem = ManageRegistration::model()->findAll('name="' . trim($itemSubject) . '"');
+                        if (empty($manageItem)) {
+                            $manage = new ManageRegistration;
+                            $manage->name = trim($itemSubject);// Закончил тут нужно дописать depend
+                            $manage->type = $typeRever[$key];
+                            $manage->default = ManageRegistration::DEFAULT_DEFAULT;
+                            $manage->depend = $dependTeacherTypeId;
+                            $manage->save();
+                        }
                     }
                 }
             }
@@ -364,7 +386,7 @@ class PopupController extends CController
         echo json_encode(['li' => $list, 'option' => $options]);
     }
 
-
+    
 
     public function toOptions($array)
     {
@@ -382,6 +404,9 @@ class PopupController extends CController
         foreach ($array as $option) {
             $ul.='<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">' . $option . '</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
             $i++;
+        }
+        if(LogicEntry::getStatusTypeManage(ManageRegistration::TYPE_SUBJECT_AREA)){
+            $ul .= '<li data-original-index="' . ++$i . '"><a tabindex="' . ++$i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
         }
         return $ul;
     }

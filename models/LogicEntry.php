@@ -7,8 +7,7 @@ class LogicEntry
         if(empty($name)) {
             return array_merge(CHtml::listData(ManageRegistration::model()->findAll('type='. $type . " ORDER BY updated_at DESC"), 'name', 'name', 'group'), ['other' => 'other']);
         } else {
-            return [$name => array_merge(CHtml::listData(ManageRegistration::model()->findAll('type='. $type . " ORDER BY updated_at DESC"), 'name', 'name', 'group'), ['other' => 'other'])];
-
+            return [$name => array_merge(CHtml::listData(ManageRegistration::model()->findAll('type='. $type . self::getQueryTypeManage($type) . " ORDER BY updated_at DESC"), 'name', 'name', 'group'), (self::getStatusTypeManage($type))?['other' => 'other']:[])];
         }
     }
 
@@ -27,4 +26,18 @@ class LogicEntry
     {
         return (HSetting::model()->find("name='required_manage' AND value='" . ManageRegistration::$type[$type] .  "'")->value_text == 1)?"*":"";
     }
+
+    /* GROUP */
+        public static function getStatusTypeManage($type)
+        {
+            return (!HSetting::model()->find("name='type_manage' AND value='" . ManageRegistration::$type[$type] .  "'")->value_text == 1)?false:true;
+        }
+    /* END GROUP */
+
+    /* GROUP */
+        public static function getQueryTypeManage($type)
+        {
+            return (!HSetting::model()->find("name='type_manage' AND value='" . ManageRegistration::$type[$type] .  "'")->value_text == 1)?" AND t.default=1":"";
+        }
+    /* END GROUP */
 }

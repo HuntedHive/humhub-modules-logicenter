@@ -465,6 +465,25 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
                                             $("input[data-type=\'"+type+"\']").remove();
                                         }
                                     }
+                                    
+                                    var inputHidden = \'<div id="teacherlevel-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right"></i></div>\';
+                                    $(".subject_area ul.dropdown-menu li a").on("click",function() {
+                                        var text = $(this).text();
+                                        var parent = $(this).parents(".form-group").find("select");
+                                        console.log(text);
+                                        if(text == "other") {
+                                        console.log(text);
+                                            if($("input[data-type="+ parent.data(\'type\') +"]").length == 0) {
+                                                console.log("type1");
+                                                parent.parents(".form-group").after(inputHidden + \'<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="\'+ parent.attr(\'name\') +\'" type="text" data-type="\'+ parent.data(\'type\') +\'" /></div></div>\')
+                                            } else {
+                                                console.log("type2");
+                                                if($("input[data-type="+ parent.data(\'type\') +"]").length == 1) {
+                                                    $("input[data-type="+ parent.data(\'type\') +"]").parents("#teacherlevel-other").remove();
+                                                }
+                                            }
+                                        }
+                                    });
                                 }',
                         )]); ?>
                         </div>
@@ -474,7 +493,7 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
                             'class' => 'manage_reg subject_area selectpicker form-control show-tick',
                             'data-type' => ManageRegistration::TYPE_SUBJECT_AREA,
                             'multiple title' => "Select subject area(s) " . LogicEntry::getRequired(ManageRegistration::TYPE_SUBJECT_AREA) . "...",
-//                            'multiple'=>'multiple',
+                            'multiple'=>'multiple',
                         ]) ?>
                         </div>
 
@@ -839,25 +858,25 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
 
         });
 
-        function responseSuccess(data) {
+            function responseSuccess(data) {
 
-          data = JSON.parse(data);
+              data = JSON.parse(data);
 
-          if(data.status === 'success') {
-            $('#mailgun').html('Submission sent succesfully.');
-          } else {
-            $('#mailgun').html('Submission failed, please contact directly.');
-          }
+              if(data.status === 'success') {
+                $('#mailgun').html('Submission sent succesfully.');
+              } else {
+                $('#mailgun').html('Submission failed, please contact directly.');
+              }
 
-        }
+            }
 
-        setTimeout(function(){
-            $(".subject_area .dropdown-menu li a").on("click",function() {
-                $(this).parent("li").toggleClass("selected");
-            });
+            setTimeout(function(){
+                $(".subject_area .dropdown-menu li a").on("click",function() {
+                    $(this).parent("li").toggleClass("selected");
+                });
 
-            $(".SubjectAreaText").text($(".subject_area .btn").attr("title"));
-        }, 1000);
+                $(".SubjectAreaText").text($(".subject_area .btn").attr("title"));
+            }, 1000);
 
 
             $("#account-register-form").on("submit", function (data) {
@@ -895,11 +914,13 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
             var inputHidden = '<div id="teacherlevel-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right"></i></div>';
 
             $(".manage_reg").change(function() {
-                if($(this).val() == "other") {
-                    $(this).parent(".form-group").after(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="'+ $(this).attr('name') +'" type="text" data-type="'+ $(this).data('type') +'" /></div></div>');
-                } else {
-                    if($("input[data-type="+ $(this).data('type') +"]")) {
-                        $("input[data-type="+ $(this).data('type') +"]").parents("#teacherlevel-other").remove();
+                if(!$(this).hasClass("subject_area")) {
+                    if ($(this).val() == "other") {
+                        $(this).parent(".form-group").after(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="' + $(this).attr('name') + '" type="text" data-type="' + $(this).data('type') + '" /></div></div>');
+                    } else {
+                        if ($("input[data-type=" + $(this).data('type') + "]")) {
+                            $("input[data-type=" + $(this).data('type') + "]").parents("#teacherlevel-other").remove();
+                        }
                     }
                 }
             });
