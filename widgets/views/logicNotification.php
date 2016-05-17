@@ -1,6 +1,6 @@
 <?php
     $cs = Yii::app()->getClientScript();
-    $cs->registerScriptFile("http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js");
+    $cs->registerScriptFile("http://ajax.googleapis.com/ajax/libs/jquery/1.10.4/jquery.min.js");
 
     $assetPrefix = Yii::app()->assetManager->publish(Yii::getPathOfAlias("application") . '/modules_core/space/resources', true, 0, defined('YII_DEBUG'));
 
