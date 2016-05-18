@@ -7,10 +7,10 @@
 
 class PopupController extends CController
 {
-    
+
     public $layout = "application.modules_core.user.views.layouts.main_auth";
     public $subLayout = "application.modules_core.user.views.auth._layout";
-    
+
     public function actionLogin()
     {
         // If user is already logged in, redirect him to the dashboard
@@ -263,6 +263,7 @@ class PopupController extends CController
         $data = $_POST['ManageRegistration'];
         $typeRever = array_flip(ManageRegistration::$type);
         $dependTeacherTypeId = "";
+        $existTeacherTypeId = '';
         if(!empty($data) && is_array($data)) {
             foreach ($data as $key => $value) {
                 if (isset($typeRever[$key]) && !empty($value) && $key != "subject_area") {
@@ -285,13 +286,30 @@ class PopupController extends CController
 
                 if(isset($typeRever[$key]) && !empty($value) && $key == "subject_area" && !empty($dependTeacherTypeId)) {
                     foreach ($value as $itemSubject) {
-                        $manageItem = ManageRegistration::model()->findAll('name="' . trim($itemSubject) . '"');
+                        $manageItem = ManageRegistration::model()->find('name="' . trim($itemSubject) . '" AND type='. ManageRegistration::TYPE_TEACHER_TYPE);
                         if (empty($manageItem)) {
+                            $tmp = ManageRegistration::model()->find('name="' . trim($itemSubject) . '" AND type='. ManageRegistration::TYPE_TEACHER_OTHER);
+                            if(empty($tmp)) {
+                                $tmp = new ManageRegistration;
+                                $tmp->name = trim($itemSubject);
+                                $tmp->type = ManageRegistration::TYPE_TEACHER_OTHER;
+                                $tmp->default = ManageRegistration::DEFAULT_DEFAULT;
+                                $tmp->depend = 0;
+                                $tmp->save(false);
+                            }
+
+                            $manage2 = new ManageRegistration;
+                            $manage2->name = trim($existTeacherTypeId->name);
+                            $manage2->type = $typeRever[$key];
+                            $manage2->default = ManageRegistration::DEFAULT_DEFAULT;
+                            $manage2->depend = $tmp->id;
+                            $manage2->save(false);
+                        } else {
                             $manage = new ManageRegistration;
-                            $manage->name = trim($itemSubject);// Закончил тут нужно дописать depend
+                            $manage->name = trim($existTeacherTypeId->name);
                             $manage->type = $typeRever[$key];
                             $manage->default = ManageRegistration::DEFAULT_DEFAULT;
-                            $manage->depend = $dependTeacherTypeId;
+                            $manage->depend = $manageItem->id;
                             $manage->save();
                         }
                     }
@@ -328,7 +346,7 @@ class PopupController extends CController
         preg_match_all("/(and|IF|or)?(.*?)[\s]?=[\s]?['|\"](.*?)['|\"][\s]/i", $string, $array, PREG_SET_ORDER);
         return $this->deleteZeroColumnInArray($array);
     }
-    
+
     protected function thenRegular($string)
     {
         $array= [];
@@ -343,7 +361,7 @@ class PopupController extends CController
             unset($value[0]);
             $newArray[] = $value;
         }
-        
+
         return $newArray;
     }
 
@@ -366,19 +384,19 @@ class PopupController extends CController
         $list = '';
         $options = '';
         $i = 0;
-        if(isset($_POST['type']) && $_POST['type'] == ManageRegistration::TYPE_TEACHER_TYPE && $_POST['nameTeacherType'] == "other") {
-            $data = ManageRegistration::model()->findAll('type=' . ManageRegistration::TYPE_TEACHER_OTHER);
+        if(isset($_POST['type']) && $_POST['type'] == ManageRegistration::TYPE_TEACHER_TYPE && strtolower($_POST['nameTeacherType']) == "other") {
+            $data = CHtml::listData(ManageRegistration::model()->findAll('name="' . ManageRegistration::VAR_OTHER . '"'), "depend", "depend");
             if (!empty($data)) {
-                $list = $this->toUl(CHtml::listData($data, 'name', 'name'));
-                $options = $this->toOptions(CHtml::listData($data, 'name', 'name'));
+                $list = $this->toUl(CHtml::listData(ManageRegistration::model()->findAll('id IN (' . implode(",", $data) . ')'), 'name', 'name'));
+                $options = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('id IN (' . implode(",", $data) . ')'), 'name', 'name'));
             } else {
 //                $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
             }
         } else {
             $idByName = ManageRegistration::model()->find('name="' . $name . '" and type=' . ManageRegistration::TYPE_TEACHER_TYPE);
                 if (!empty($idByName)) {
-                    $list = $this->toUl(CHtml::listData(ManageRegistration::model()->findAll('depend=' . $idByName->id), 'name', 'name'));
-                    $options = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('depend=' . $idByName->id), 'name', 'name'));
+                    $list = $this->toUl(CHtml::listData(ManageRegistration::model()->findAll('name!="'.ManageRegistration::VAR_OTHER.'" AND depend=' . $idByName->id), 'name', 'name'));
+                    $options = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('name!="'.ManageRegistration::VAR_OTHER.'" AND depend=' . $idByName->id), 'name', 'name'));
                 } else {
 //                    $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
                 }
@@ -386,7 +404,7 @@ class PopupController extends CController
         echo json_encode(['li' => $list, 'option' => $options]);
     }
 
-    
+
 
     public function toOptions($array)
     {
@@ -405,9 +423,8 @@ class PopupController extends CController
             $ul.='<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">' . $option . '</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
             $i++;
         }
-        if(LogicEntry::getStatusTypeManage(ManageRegistration::TYPE_SUBJECT_AREA)){
-            $ul .= '<li data-original-index="' . ++$i . '"><a tabindex="' . ++$i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
-        }
+
+        $ul .= '<li data-original-index="' . ++$i . '"><a tabindex="' . ++$i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
         return $ul;
     }
 }

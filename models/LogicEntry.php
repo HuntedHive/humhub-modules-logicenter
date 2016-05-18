@@ -4,11 +4,7 @@ class LogicEntry
 {
     public static function getDropDown($type, $name = "")
     {
-        if(empty($name)) {
-            return array_merge(CHtml::listData(ManageRegistration::model()->findAll('type='. $type . " ORDER BY updated_at DESC"), 'name', 'name', 'group'), ['other' => 'other']);
-        } else {
-            return [$name => array_merge(CHtml::listData(ManageRegistration::model()->findAll('type='. $type . self::getQueryTypeManage($type) . " ORDER BY updated_at DESC"), 'name', 'name', 'group'), (self::getStatusTypeManage($type))?['other' => 'other']:[])];
-        }
+            return array_merge(CHtml::listData(ManageRegistration::model()->findAll('type='. $type . " AND `default`=". ManageRegistration::DEFAULT_ADDED ." ORDER BY updated_at DESC"), 'name', 'name', 'group'), ['other' => 'other']);
     }
 
     public static function getDropDownDepend()

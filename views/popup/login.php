@@ -470,14 +470,10 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
                                     $(".subject_area ul.dropdown-menu li a").on("click",function() {
                                         var text = $(this).text();
                                         var parent = $(this).parents(".form-group").find("select");
-                                        console.log(text);
-                                        if(text == "other") {
-                                        console.log(text);
+                                        if(text.toLowerCase() == "other") {
                                             if($("input[data-type="+ parent.data(\'type\') +"]").length == 0) {
-                                                console.log("type1");
                                                 parent.parents(".form-group").after(inputHidden + \'<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="\'+ parent.attr(\'name\') +\'" type="text" data-type="\'+ parent.data(\'type\') +\'" /></div></div>\')
                                             } else {
-                                                console.log("type2");
                                                 if($("input[data-type="+ parent.data(\'type\') +"]").length == 1) {
                                                     $("input[data-type="+ parent.data(\'type\') +"]").parents("#teacherlevel-other").remove();
                                                 }
