@@ -305,12 +305,18 @@ class PopupController extends CController
                             $manage2->depend = $tmp->id;
                             $manage2->save(false);
                         } else {
-                            $manage = new ManageRegistration;
-                            $manage->name = trim($existTeacherTypeId->name);
-                            $manage->type = $typeRever[$key];
-                            $manage->default = ManageRegistration::DEFAULT_DEFAULT;
-                            $manage->depend = $manageItem->id;
-                            $manage->save();
+                            $itemTeacherType = ManageRegistration::model()->find('name="' . trim($itemSubject) . '" AND type='. ManageRegistration::TYPE_TEACHER_TYPE);
+                            if(!empty($itemTeacherType)) {
+                                $searchRelSubject = ManageRegistration::model()->find('name="' . trim($existTeacherTypeId->name) . '" AND type=' . ManageRegistration::TYPE_SUBJECT_AREA. ' AND depend='. $itemTeacherType->id);
+                                if (empty($searchTeacherType)) {
+                                    $manage = new ManageRegistration;
+                                    $manage->name = trim($existTeacherTypeId->name);
+                                    $manage->type = $typeRever[$key];
+                                    $manage->default = ManageRegistration::DEFAULT_DEFAULT;
+                                    $manage->depend = $manageItem->id;
+                                    $manage->save();
+                                }
+                            }
                         }
                     }
                 }
