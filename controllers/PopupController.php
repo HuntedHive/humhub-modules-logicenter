@@ -49,13 +49,13 @@ class PopupController extends CController
         // Always clear password
         $model->password = "";
 
-        $registerModel = new AccountRegisterForm;
+        $registerModel = new CustomAccountRegisterForm;
 
         // Registration enabled?
         if ($canRegister) {
             // if it is ajax validation request
             if (Yii::app()->request->isAjaxRequest) {
-                $registerModel->attributes = $_POST['AccountRegisterForm'];
+                $registerModel->attributes = $_POST['CustomAccountRegisterForm'];
                 $registerModel->validate();
 
                 $logic = strtolower(HSetting::GetText("logic_enter"));
@@ -64,7 +64,7 @@ class PopupController extends CController
 
                 if(!is_null($domain)) {
 
-                    if(!preg_match("/^[\w\W]*[.](" . str_replace(" ","|", $domain) . ")$/", $_POST['AccountRegisterForm']['email'])) {
+                    if(!preg_match("/^[\w\W]*[.](" . str_replace(" ","|", $domain) . ")$/", $_POST['CustomAccountRegisterForm']['email'])) {
                         $registerModel->addError("AccountRegisterForm_email", "email only: " . $domain);
                     }
 
@@ -94,7 +94,7 @@ class PopupController extends CController
                         Yii::app()->end();
                     }
 
-                    $usEmail = $_POST['AccountRegisterForm']['email'];
+                    $usEmail = $_POST['CustomAccountRegisterForm']['email'];
                     $user = new User;
                     $user->username = $usEmail;
                     $user->email = $usEmail;
