@@ -282,7 +282,7 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
 
                 <p class="lead text-center" style="font-size: 16px !important;">
                     <span class="lead-small">Step 1 of 2</span><br>
-                    <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your primary institutional e-mail address below."); ?>
+                    <?php echo Yii::t('UserModule.views_auth_login', "Join the community by entering your <br> primary institutional e-mail address below."); ?>
                 </p>
 
                 <div id="ie-alert-message" class="alert alert-danger" style="display:none;">
@@ -407,7 +407,7 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
                     Join</strong> the TeachConnect Community') ?></h3>
                 <p class="lead text-center" style="font-size: 16px !important;">
                     <span class="lead-small">Step 2 of 2</span><br>
-                    <?php echo Yii::t('UserModule.views_auth_login', "Please provide some additional information so we can add you to the correct circle."); ?>
+                    <?php echo Yii::t('UserModule.views_auth_login', "Please provide some additional information <br> so we can add you to the correct circle."); ?>
                 </p>
                 <br />
             </div>
