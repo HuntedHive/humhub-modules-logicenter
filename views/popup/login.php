@@ -444,6 +444,10 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
                                 'update'=>'.subject_area',
                                 'data'=> ['nameTeacherType' => 'js:$(this).val()', 'CSRF_TOKEN' => Yii::app()->request->csrfToken, 'type' => 'js:$(this).data("type")'],
                                 'success' => 'js:function(data) {
+                                    $("select.manage_reg").removeAttr("disabled");
+                                    $("div.manage_reg").removeClass("disabled");
+                                    $("button.dropdown-toggle").removeClass("disabled");
+                                    
                                     $(".subject_area .dropdown-menu .inner").empty();
                                     $(".subject_area .dropdown-menu .inner").append(JSON.parse(data).li);
                                     
@@ -490,6 +494,7 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
                             'data-type' => ManageRegistration::TYPE_SUBJECT_AREA,
                             'multiple title' => "Select subject area(s) " . LogicEntry::getRequired(ManageRegistration::TYPE_SUBJECT_AREA) . "...",
                             'multiple'=>'multiple',
+                            'disabled' => 'disabled'
                         ]) ?>
                         </div>
 
