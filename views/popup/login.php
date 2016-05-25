@@ -899,7 +899,7 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logice
                         }
 
                         if(object.flag == "next") {
-                            var email_input = $("#AccountRegisterForm_email").clone();
+                            var email_input = $("#CustomAccountRegisterForm_email").clone();
                             email_input.attr("type", 'hidden');
                             email_input.attr("name", "email_domain");
                             $("#account-register-form-second").append(email_input);
