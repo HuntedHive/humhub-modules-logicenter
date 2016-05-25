@@ -8,6 +8,7 @@ Add code to config/_defaults.php and add code only to Rules
     'user/auth/login' => 'logicenter/popup/login',
     
 And change urlFormat:
+
     'urlFormat' => 'path'
     
 If you disable module  you need to delete the line below:
