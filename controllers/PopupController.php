@@ -396,7 +396,7 @@ class PopupController extends CController
                 $list = $this->toUl(CHtml::listData(ManageRegistration::model()->findAll('id IN (' . implode(",", $data) . ')'), 'name', 'name'));
                 $options = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('id IN (' . implode(",", $data) . ')'), 'name', 'name'));
             } else {
-//                $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
+                $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
             }
         } else {
             $idByName = ManageRegistration::model()->find('name="' . $name . '" and type=' . ManageRegistration::TYPE_TEACHER_TYPE);
