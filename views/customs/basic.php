@@ -36,17 +36,19 @@
 
 
         <?php echo $form->labelEx($model, 'defaultSpaceGuid'); ?>
-        <?php echo $form->textField($model, 'defaultSpaceGuid', array('class' => 'form-control', 'id' => 'space_select')); ?>
-        <?php
-        $this->widget('application.modules_core.space.widgets.SpacePickerWidget', array(
-            'inputId' => 'space_select',
-            'model' => $model,
-            'maxSpaces' => 50,
-            'attribute' => 'defaultSpaceGuid'
-        ));
-        ?>
-        
-        <strong><?php echo Yii::t('AdminModule.views_setting_index', 'Matching Logic'); ?></strong>
+        <div class="form-group">
+            <?php echo $form->textField($model, 'defaultSpaceGuid', array('class' => 'form-control', 'id' => 'space_select')); ?>
+            <?php
+            $this->widget('application.modules_core.space.widgets.SpacePickerWidget', array(
+                'inputId' => 'space_select',
+                'model' => $model,
+                'maxSpaces' => 50,
+                'attribute' => 'defaultSpaceGuid'
+            ));
+            ?>
+        </div>
+
+        <label><?php echo Yii::t('AdminModule.views_setting_index', 'Matching Logic'); ?></label>
         <div class="form-group">
             <p class="help-block">
 				<?php echo Yii::t('AdminModule.views_setting_index', 'Custom if-then logic for default user space.'); ?>
