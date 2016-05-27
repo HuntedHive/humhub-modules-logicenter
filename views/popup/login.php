@@ -9,8 +9,8 @@
  * @package humhub.modules_core.user.views
  * @since 0.5
  */
-$this->pageTitle = Yii::t('UserModule.views_auth_login', '<strong>Please</strong> sign in');
-Yii::app()->clientScript->registerCssFile($this->module->assetsUrl. '/css/logicenter.css');
+
+$this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
 ?>
 
 <div class="SubjectAreaText hidden"></div>
