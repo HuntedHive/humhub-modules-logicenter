@@ -12,7 +12,7 @@
 
 $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
 ?>
-
+<link href="<?= $this->module->assetsUrl; ?>/css/logicenter.css" rel="stylesheet">
 <div class="SubjectAreaText hidden"></div>
 <div class="container-fluid text-center login-container-home">
 
@@ -494,7 +494,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                             'data-type' => ManageRegistration::TYPE_SUBJECT_AREA,
                             'multiple title' => "Select subject area(s) " . LogicEntry::getRequired(ManageRegistration::TYPE_SUBJECT_AREA) . "...",
                             'multiple'=>'multiple',
-                            'disabled' => 'disabled'
+                            'options'=> [ 0=>['disabled'=>'disabled'] ],
                         ]) ?>
                         </div>
 
@@ -871,9 +871,11 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
 
             }
 
-            setTimeout(function(){
+            setTimeout(function() {
                 $(".subject_area .dropdown-menu li a").on("click",function() {
-                    $(this).parent("li").toggleClass("selected");
+                    if($(this).parent("li").is(":disabled")) {
+                        $(this).parent("li").toggleClass("selected");
+                    }
                 });
 
                 $(".SubjectAreaText").text($(".subject_area .btn").attr("title"));

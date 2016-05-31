@@ -430,7 +430,9 @@ class PopupController extends CController
             $i++;
         }
 
-        $ul .= '<li data-original-index="' . ++$i . '"><a tabindex="' . ++$i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
+        if(LogicEntry::getStatusTypeManage(ManageRegistration::TYPE_SUBJECT_AREA)) {
+            $ul .= '<li data-original-index="' . ++$i . '"><a tabindex="' . ++$i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
+        }
         return $ul;
     }
 }
