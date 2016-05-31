@@ -19,7 +19,7 @@ if(LogicEntry::getStatusHomeOfUser()) {
 
 <script>
     $(document).ready(function() {
-        var orderList = new Array('Knowledge', 'Home', 'События', 'My circles', 'Live Chat', 'Каталог');
+        var orderList = new Array('Knowledge', 'All circles', 'События', 'Mentor circles', 'Live Chat', 'Каталог', 'Menu');
         var menuPanelList = $("#topbar-second ul.nav:first li:visible").clone();
 
         $("#topbar-second ul.nav:first").empty();
