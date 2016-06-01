@@ -470,7 +470,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                                         }
                                     }
                                     
-                                    var inputHidden = \'<div id="teacherlevel-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa  custom-right-arrow"></i></div>\';
+                                    var inputHidden = \'<div id="teacherlevel-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right custom-right-arrow"></i></div>\';
                                     $(".subject_area ul.dropdown-menu li a").on("click",function() {
                                         var text = $(this).text();
                                         var parent = $(this).parents(".form-group").find("select");
