@@ -466,7 +466,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                                         $(".subject_area").after("<input name=\'"+name+"\' type=\'text\' data-type=\'"+type+"\'/>");
                                     } else {
                                         if($("input[data-type=\'"+type+"\']").length != 0 && $(".subject_area").val() != "other") {
-                                            $("input[data-type=\'"+type+"\']").remove();
+                                            $("input[data-type=\'"+type+"\']").parents("#teacherlevel-other").remove();
                                         }
                                     }
                                     
