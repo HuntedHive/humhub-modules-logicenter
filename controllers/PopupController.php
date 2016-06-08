@@ -179,6 +179,7 @@ class PopupController extends CController
         $if = $this->parseExpression(explode("then", $logic)[0]);
         $domain = $this->returnEmail($ifRegular);
         if(!is_null($domain) && preg_match("/^[\w\W]*.(" . str_replace(" ","|", $mailReg) . ")$/", $_POST['email_domain'])) {
+
             $user = new User;
             $user->username = $_POST['email_domain'];
             $user->email = $_POST['email_domain'];
@@ -286,37 +287,13 @@ class PopupController extends CController
 
                 if(isset($typeRever[$key]) && !empty($value) && $key == "subject_area" && !empty($dependTeacherTypeId)) {
                     foreach ($value as $itemSubject) {
-                        $manageItem = ManageRegistration::model()->find('name="' . trim($itemSubject) . '" AND type='. ManageRegistration::TYPE_TEACHER_TYPE);
-                        if (empty($manageItem)) {
-                            $tmp = ManageRegistration::model()->find('name="' . trim($itemSubject) . '" AND type='. ManageRegistration::TYPE_TEACHER_OTHER);
-                            if(empty($tmp)) {
-                                $tmp = new ManageRegistration;
-                                $tmp->name = trim($itemSubject);
-                                $tmp->type = ManageRegistration::TYPE_TEACHER_OTHER;
-                                $tmp->default = ManageRegistration::DEFAULT_DEFAULT;
-                                $tmp->depend = 0;
-                                $tmp->save(false);
-                            }
-
+                        if (empty($itemSubject)) {
                             $manage2 = new ManageRegistration;
-                            $manage2->name = trim($existTeacherTypeId->name);
-                            $manage2->type = $typeRever[$key];
+                            $manage2->name = trim($itemSubject);
+                            $manage2->type = ManageRegistration::TYPE_SUBJECT_AREA;
                             $manage2->default = ManageRegistration::DEFAULT_DEFAULT;
-                            $manage2->depend = $tmp->id;
+                            $manage2->depend = $dependTeacherTypeId;
                             $manage2->save(false);
-                        } else {
-                            $itemTeacherType = ManageRegistration::model()->find('name="' . trim($itemSubject) . '" AND type='. ManageRegistration::TYPE_TEACHER_TYPE);
-                            if(!empty($itemTeacherType)) {
-                                $searchRelSubject = ManageRegistration::model()->find('name="' . trim($existTeacherTypeId->name) . '" AND type=' . ManageRegistration::TYPE_SUBJECT_AREA. ' AND depend='. $itemTeacherType->id);
-                                if (empty($searchTeacherType)) {
-                                    $manage = new ManageRegistration;
-                                    $manage->name = trim($existTeacherTypeId->name);
-                                    $manage->type = $typeRever[$key];
-                                    $manage->default = ManageRegistration::DEFAULT_DEFAULT;
-                                    $manage->depend = $manageItem->id;
-                                    $manage->save();
-                                }
-                            }
                         }
                     }
                 }
@@ -391,10 +368,12 @@ class PopupController extends CController
         $options = '';
         $i = 0;
         if(isset($_POST['type']) && $_POST['type'] == ManageRegistration::TYPE_TEACHER_TYPE && strtolower($_POST['nameTeacherType']) == "other") {
-            $data = CHtml::listData(ManageRegistration::model()->findAll('name="' . ManageRegistration::VAR_OTHER . '"'), "depend", "depend");
+            $sql = 'SELECT t1.name FROM `manage_registration` t1 LEFT JOIN manage_registration t2 ON t1.depend = t2.id WHERE t1.type = 2 AND t2.name = "other"';
+            $data = Yii::app()->db->createCommand($sql)->queryAll();
+            $data = CHtml::listData($data, "name", "name");
             if (!empty($data)) {
-                $list = $this->toUl(CHtml::listData(ManageRegistration::model()->findAll('id IN (' . implode(",", $data) . ')'), 'name', 'name'));
-                $options = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('id IN (' . implode(",", $data) . ')'), 'name', 'name'));
+                $list = $this->toUl($data);
+                $options = $this->toOptions($data);
             } else {
                 $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
             }
