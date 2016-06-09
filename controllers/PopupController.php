@@ -287,7 +287,7 @@ class PopupController extends CController
 
                 if(isset($typeRever[$key]) && !empty($value) && $key == "subject_area" && !empty($dependTeacherTypeId)) {
                     foreach ($value as $itemSubject) {
-                        if (empty($itemSubject)) {
+                        if (empty($itemSubject) && strtolower($itemSubject) != "other") {
                             $manage2 = new ManageRegistration;
                             $manage2->name = trim($itemSubject);
                             $manage2->type = ManageRegistration::TYPE_SUBJECT_AREA;
@@ -397,6 +397,12 @@ class PopupController extends CController
         foreach ($array as $option) {
             $options.="<option value='$option'>$option</option>";
         }
+
+        if(LogicEntry::getStatusTypeManage(ManageRegistration::TYPE_SUBJECT_AREA)) {
+            $options.="<option value='other'>other</option>";
+        }
+        $options.="<option value='other'>other</option>";
+
         return $options;
     }
 
