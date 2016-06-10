@@ -100,6 +100,7 @@ class PopupController extends CController
                     $user->email = $usEmail;
                     $user->save();
 
+
                     $userPassword = new UserPassword;
                     $userPassword->user_id = $user->id;
                     $userPassword->setPassword($usEmail);
@@ -226,7 +227,13 @@ class PopupController extends CController
 
             $this->addOthertoList();
 
+
             if ($model->validate() && $model->login()) {
+                $profile = new Profile();
+                $profile->user_id = Yii::app()->user->id;
+                $profile->teacher_type = $_POST['ManageRegistration']['teacher_type'];
+                $profile->save(false);
+
                 echo json_encode(
                     [
                         'flag' => 'redirect'
