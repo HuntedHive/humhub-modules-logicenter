@@ -1,10 +1,6 @@
 <?php
-    if(Yii::app()->controller->id == "customs") {
-        $cs = Yii::app()->getClientScript();
-        $cs->registerScriptFile("http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js");
-    }
 
-    $assetPrefix = Yii::app()->assetManager->publish(Yii::getPathOfAlias("application") . '/modules_core/space/resources', true, 0, defined('YII_DEBUG'));
+use humhub\modules\logicenter\models\LogicEntry;
 
 if(LogicEntry::getStatusHomeOfUser()) {
 ?>
@@ -46,7 +42,7 @@ if(LogicEntry::getStatusHomeOfUser()) {
 
         $(".listOrderLoad").animate({opacity: 1}, 500);
 
-        $.post('<?= $assetPrefix ?>' + '/spacechooser.js', function (data) {
+        $.post('<?= Yii::getAlias("@web") . '/resources' ?>' + '/space/spacechooser.js', function (data) {
            $("body").append('<script type="text/javascript">' + data + '<\/script>');
         });
     });

@@ -1,63 +1,67 @@
 <?php
 
+namespace humhub\modules\logicenter\controllers;
 
+use humhub\modules\logicenter\forms\BasicSettingsLogicForm;
+use humhub\modules\space\models\Space;
+use yii\bootstrap\ActiveForm;
+use humhub\models\Setting;
+use humhub\components\Controller;
+use Yii;
 
 class CustomsController extends Controller
 {
     
-    public $subLayout = "application.modules_core.admin.views._layout";
+    public $subLayout = "@humhub/modules/admin/views/layouts/main";
 
     /**
      * Returns a List of Users
      */
     public function actionBasic()
     {
-        if(!Yii::app()->user->isAdmin()) {
+        if(!Yii::$app->user->isAdmin()) {
             return $this->redirect(['/']);
         }
 
-        Yii::import('admin.forms.*');
-
-        $form = new BasicSettingsLogicForm;
-        $form->name = HSetting::Get('name');
-        $form->baseUrl = HSetting::Get('baseUrl');
-        $form->defaultLanguage = HSetting::Get('defaultLanguage');
-        $form->dashboardShowProfilePostForm = HSetting::Get('showProfilePostForm', 'dashboard');
-        $form->tour = HSetting::Get('enable', 'tour');
-        $form->logic_enter = HSetting::GetText('logic_enter');
-        $form->logic_else = HSetting::GetText('logic_else');
+        $form = new BasicSettingsLogicForm();
+        $form->name = Setting::Get('name');
+        $form->baseUrl = Setting::Get('baseUrl');
+        $form->defaultLanguage = Setting::Get('defaultLanguage');
+        $form->dashboardShowProfilePostForm = Setting::Get('showProfilePostForm', 'dashboard');
+        $form->tour = Setting::Get('enable', 'tour');
+        $form->logic_enter = Setting::GetText('logic_enter');
+        $form->logic_else = Setting::GetText('logic_else');
         
         $form->defaultSpaceGuid = "";
-        foreach (Space::model()->findAllByAttributes(array('auto_add_new_members' => 1)) as $defaultSpace) {
+        foreach (Space::find()->andWhere(['auto_add_new_members' => 1])->all() as $defaultSpace) {
             $form->defaultSpaceGuid .= $defaultSpace->guid . ",";
         }
 
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'basic-settings-form') {
-            echo CActiveForm::validate($form);
-            Yii::app()->end();
+            echo ActiveForm::validate($form);
+            Yii::$app->end();
         }
 
         if (isset($_POST['BasicSettingsLogicForm'])) {
-            $_POST['BasicSettingsLogicForm'] = Yii::app()->input->stripClean($_POST['BasicSettingsLogicForm']);
-            $form->attributes = $_POST['BasicSettingsLogicForm'];
+            $form->load(Yii::$app->request->post());
 
             if ($form->validate()) {
 
                 $form->logic_enter = $this->validateText($form->logic_enter);
                 preg_match("/[\s]{2,}/", $form->logic_enter, $emptyR);
                 if(empty($emptyR)) {
-                    HSetting::Set('name', $form->name);
-                    HSetting::Set('baseUrl', $form->baseUrl);
-                    HSetting::Set('defaultLanguage', $form->defaultLanguage);
-                    HSetting::Set('enable', $form->tour, 'tour');
-                    HSetting::Set('showProfilePostForm', $form->dashboardShowProfilePostForm, 'dashboard');
-                    HSetting::SetText('logic_enter', $form->logic_enter);
-                    HSetting::SetText('logic_else', $form->logic_else);
+                    Setting::Set('name', $form->name);
+                    Setting::Set('baseUrl', $form->baseUrl);
+                    Setting::Set('defaultLanguage', $form->defaultLanguage);
+                    Setting::Set('enable', $form->tour, 'tour');
+                    Setting::Set('showProfilePostForm', $form->dashboardShowProfilePostForm, 'dashboard');
+                    Setting::SetText('logic_enter', $form->logic_enter);
+                    Setting::SetText('logic_else', $form->logic_else);
 
                     $spaceGuids = explode(",", $form->defaultSpaceGuid);
 
                     // Remove Old Default Spaces
-                    foreach (Space::model()->findAllByAttributes(array('auto_add_new_members' => 1)) as $space) {
+                    foreach (Space::find()->andWhere(array('auto_add_new_members' => 1))->all() as $space) {
                         if (!in_array($space->guid, $spaceGuids)) {
                             $space->auto_add_new_members = 0;
                             $space->save();
@@ -66,7 +70,7 @@ class CustomsController extends Controller
 
                     // Add new Default Spaces
                     foreach ($spaceGuids as $spaceGuid) {
-                        $space = Space::model()->findByAttributes(array('guid' => $spaceGuid));
+                        $space = Space::find()->andWhere(array('guid' => $spaceGuid))->one();
                         if ($space != null && $space->auto_add_new_members != 1) {
                             $space->auto_add_new_members = 1;
                             $space->save();
@@ -74,13 +78,13 @@ class CustomsController extends Controller
                     }
 
                     // set flash message
-                    Yii::app()->user->setFlash('data-saved', Yii::t('AdminModule.controllers_SettingController', 'Saved'));
+                    Yii::$app->session->setFlash('data-saved', Yii::t('AdminModule.controllers_SettingController', 'Saved'));
                 }
-                $this->redirect(Yii::app()->createUrl('//admin/setting/basic'));
+                $this->redirect(['//admin/setting/basic']);
             }
         }
         
-        $this->render('basic', array('model' => $form));
+        return $this->render('basic', array('model' => $form));
     }
 
     public function validateText($text)

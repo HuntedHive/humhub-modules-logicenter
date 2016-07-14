@@ -11,10 +11,18 @@
  */
 
 $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
+
+use yii\helpers\Url;
+use yii\helpers\Html;
+use humhub\modules\logicenter\models\LogicEntry;
+use humhub\modules\registration\models\ManageRegistration;
+
+\humhub\assets\TeachConnectAsset::register($this);
 ?>
-<link href="<?= $this->module->assetsUrl; ?>/css/logicenter.css" rel="stylesheet">
+
+<link href="<?= $this->context->module->assetsUrl; ?>/css/logicenter.css" rel="stylesheet">
 <div class="SubjectAreaText hidden"></div>
-<div class="container-fluid text-center login-container-home">
+<div class="text-center login-container-home">
 
 	<nav class="navbar navbar-fixed-top topbar" id="topbar-first">
       <div class="container">
@@ -26,7 +34,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
             <span class="icon-bar"></span>
           </button>
           <div class="topbar-brand">
-          	<?php $this->widget('application.widgets.LogoWidget', array()); ?>
+              <?= \humhub\widgets\SiteLogo::widget(); ?>
           </div>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
@@ -54,54 +62,52 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
         <div class="row">
             <div class="signin-form col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12">
 
-            	<img class="img-responsive visible-xs banner-small" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/home-banner-small.png">
+            	<img class="img-responsive visible-xs banner-small" src="<?php echo $this->theme->baseUrl; ?>/img/home-banner-small.png">
 
                 <h1><strong>Connecting teachers</strong> to help<br>educate the next generation.</h1>
 
                 <?php
-                    $form = $this->beginWidget('CActiveForm', array('id' => 'account-login-form','enableAjaxValidation' => false,
-                ));
+                    $form = \yii\bootstrap\ActiveForm::begin(array(
+                        'id' => 'account-login-form',
+                        'enableAjaxValidation' => false)
+                    );
                 ?>
 
                 <div class="form-group">
-                    <?php echo $form->textField($model, 'username', array('class' => 'form-control', 'id' =>
-                    'login_username', 'placeholder' => Yii::t('UserModule.views_auth_login', 'Enter your username or email'))); ?>
+                    <?php echo $form->field($model, 'username')->textInput(array('class' => 'form-control', 'id' =>
+                        'login_username', 'placeholder' => Yii::t('UserModule.views_auth_login', 'Enter your username or email')))->label(false); ?>
                 </div>
 
                 <div class="form-group">
-                    <?php echo $form->passwordField($model, 'password', array('class' => 'form-control', 'id' =>
-                    'login_password', 'placeholder' => Yii::t('UserModule.views_auth_login', 'Enter your password')));?>
+                    <?php echo $form->field($model, 'password')->passwordInput(array('class' => 'form-control', 'id' =>
+                        'login_password', 'placeholder' => Yii::t('UserModule.views_auth_login', 'Enter your password')))->label(false);?>
                 </div>
 
 
                 <div class="row">
                     <div class="col-xs-12">
-                        	<?php echo CHtml::submitButton(Yii::t('UserModule.views_auth_login', 'Sign in'), array('class' =>'btn btn-large btn-primary')); ?>
+                        	<?php echo Html::submitButton(Yii::t('UserModule.views_auth_login', 'Sign in'), array('class' =>'btn btn-large btn-primary')); ?>
                     </div>
-                    <?php echo $form->error($model, 'username'); ?>
-					<?php echo $form->error($model, 'password'); ?>
                 </div>
 
                 <div class="row form-links">
                     <div class="col-xs-6 text-left">
-                        <div class="checkbox">
-                            <label><?php echo $form->checkBox($model, 'rememberMe'); ?>
-                                <?php echo Yii::t('UserModule.views_auth_login', 'Remember me'); ?></label>
-                        </div>
+                        <?php echo Html::activeCheckbox($model, 'rememberMe'); ?>
                     </div>
                     <div class="col-xs-6 text-right">
-                        <a href="<?php echo $this->createUrl('//user/auth/recoverPassword'); ?>">
-                            <?php echo Yii::t('UserModule.views_auth_login', 'Forgot password?') ?></a>
+                        <a href="<?php echo Url::toRoute('//user/auth/recoverPassword'); ?>">
+                            <?php echo Yii::t('UserModule.views_auth_login', 'Forgot password?') ?>
+                        </a>
                     </div>
                 </div>
 
-                <?php $this->endWidget(); ?>
+                <?php \yii\bootstrap\ActiveForm::end(); ?>
 
                 <p>Not a member yet?<br>
                     <a data-toggle="modal" data-target="#modalRegister">Join the community now.</a></p>
 
                 <a onclick="$('#quotes').animatescroll({padding:50,scrollSpeed:1000,easing:'easeInOutCirc'});">
-                	<img class="down-arrow" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/caret.png"></a>
+                	<img class="down-arrow" src="<?php echo $this->theme->baseUrl; ?>/img/caret.png"></a>
             </div>
         </div>
 
@@ -111,8 +117,8 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
 <div class="container">
     <div class="row quote-section">
         <div class="col-xs-12" id="quotes">
-        	<img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-apple.png">
-            <?php $this->renderPartial('//quotes/quotes', array()); ?>
+        	<img src="<?php echo $this->theme->baseUrl; ?>/img/tc-apple.png">
+            <?php echo $this->renderFile($this->theme->basePath  . '/views/quotes/quotes.php'); ?>
         </div>
 
     </div>
@@ -151,7 +157,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalRegister">Join the community</button>
         </div>
         <div class="col-sm-3 col-sm-offset-2 col-xs-12">
-            <img class="img-responsive" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-community-1.png">
+            <img class="img-responsive" src="<?php echo $this->theme->baseUrl; ?>/img/tc-community-1.png">
         </div>
     </div>
 
@@ -162,7 +168,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalRegister">Ask your questions</button>
         </div>
         <div class="col-sm-3 col-sm-offset-2 col-sm-pull-6 col-xs-12">
-        	<img class="img-responsive" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-community-2.png">
+        	<img class="img-responsive" src="<?php echo $this->theme->baseUrl; ?>/img/tc-community-2.png">
         </div>
     </div>
 
@@ -173,7 +179,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalRegister">Connect with your peers</button>
         </div>
         <div class="col-sm-3 col-sm-offset-2 col-xs-12">
-            <img class="img-responsive" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-community-3.png">
+            <img class="img-responsive" src="<?php echo $this->theme->baseUrl; ?>/img/tc-community-3.png">
         </div>
     </div>
 
@@ -186,7 +192,9 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
 
                 <div class="col-md-7 contact-details">
                     <div class="row">
-                        <div class="col-xs-12"><?php $this->widget('application.widgets.LogoWidget', array()); ?></div>
+                        <div class="col-xs-12">
+                            <?= \humhub\widgets\SiteLogo::widget(); ?>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-12">
@@ -219,23 +227,6 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
 
                         <button type="submit" class="btn btn-primary">Send</button>
                     </form>
-
-                    <!--<form id="email_form" method="post" action="<?php echo Yii::app()->theme->baseUrl; ?>/mail.php">
-                        <div class="form-group">
-                            <input name="email_name" type="text" class="form-control" id="contactInputName"
-                                   placeholder="Enter your name">
-                        </div>
-                        <div class="form-group">
-                            <input name="email_address" type="email" class="form-control" id="contactInputEmail"
-                                   placeholder="Enter your email">
-                        </div>
-                        <div class="form-group">
-                            <textarea name="email_message" class="form-control" id="contactInputMessage" rows="5"
-                                      placeholder="Enter your message"></textarea>
-                        </div>
-
-                        <button id="send_email" type="submit" class="btn btn-primary">Send</button>
-                    </form>-->
                 </div>
 
             </div>
@@ -265,7 +256,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
         <div class="modal-content">
 
             <div class="modal-header">
-            	<img class="img-responsive" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-register.png">
+            	<img class="img-responsive" src="<?php echo $this->theme->baseUrl; ?>/img/tc-register.png">
                 <button type="button" class="close close-feature" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h3 class="modal-title" id="myModalLabel"><?php echo Yii::t('UserModule.views_auth_login', '<strong>
@@ -274,7 +265,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
 
             <?php if ($canRegister) : ?>
                 <?php
-                $form = $this->beginWidget('CActiveForm', array(
+                $form = \yii\bootstrap\ActiveForm::begin(array(
                         'id' => 'account-register-form',
                 ));
                 ?>
@@ -296,18 +287,13 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                 <div class="row">
 
                     <div class="form-group col-sm-8 col-sm-offset-2">
-                    	<!-- <input class="form-control" id="register-email" required placeholder="Enter your email" name="AccountRegisterForm[email]" value="" type="email"> -->
-
-                        <?php echo $form->textField($registerModel, 'email',
-                            array(
-                                'class' => 'form-control',
-                                'required' => 'true',
-                                'type' => 'email',
-                                'placeholder' => Yii::t('UserModule.views_auth_login', 'Enter your primary e-mail address *')
-                                )
-                            );
+                        <?php echo $form->field($registerModel, 'email')->textInput(array(
+                            'class' => 'form-control',
+                            'required' => 'true',
+                            'type' => 'email',
+                            'placeholder' => Yii::t('UserModule.views_auth_login', 'Enter your primary e-mail address *')
+                        ));
                         ?>
-                        <?php echo $form->error($registerModel, 'email'); ?>
                     </div>
                 </div>
 
@@ -377,15 +363,13 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                         <small>* required fields</small>
                     </div>
                 </div>
-
-                <!-- <?php $this->widget('application.widgets.LanguageChooser'); ?> -->
             </div>
 
             <div class="modal-footer">
             	<div class="row">
                 	 <div class="col-sm-8 col-sm-offset-2">
-						<?php echo CHtml::submitButton(Yii::t('UserModule.views_auth_login', 'Register'), array('class' => 'btn btn-primary firstmodal')); ?>
-                        <?php $this->endWidget(); ?>
+						<?php echo Html::submitButton(Yii::t('UserModule.views_auth_login', 'Register'), array('class' => 'btn btn-primary firstmodal')); ?>
+                        <?php \yii\bootstrap\ActiveForm::end(); ?>
                         <?php endif; ?>
                 	</div>
                 </div>
@@ -395,12 +379,12 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
     </div>
 </div>
 
-<!-- Second Modal Registration -->
+<!-- Second Modal Registration-->
 <div class="modal" id="modalSecondModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-            	<img class="img-responsive" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/tc-register.png">
+            	<img class="img-responsive" src="<?php echo $this->theme->baseUrl; ?>/img/tc-register.png">
                 <button type="button" class="close close-feature" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h3 class="modal-title" id="myModalLabel"><?php echo Yii::t('UserModule.views_auth_login', '<strong>
@@ -413,9 +397,9 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
             </div>
 
                 <?php
-                $form = $this->beginWidget('CActiveForm', array(
+                $form = \yii\bootstrap\ActiveForm::begin(array(
                     'id' => 'account-register-form-second',
-                    'action' => Yii::app()->createUrl("/logicenter/popup/secondModal"),
+                    'action' => Url::toRoute("/logicenter/popup/second-modal"),
                 ));
                 ?>
             <div class="blockErrors"></div>
@@ -426,7 +410,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                 </div>
                 <div class="row">
                         <div class="form-group col-sm-8 col-sm-offset-2">
-                        <?php echo $form->dropDownList($manageReg, 'teacher_level', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_LEVEL, "Select teacher level"), [
+                        <?php echo Html::activeDropDownList($manageReg, 'teacher_level', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_LEVEL, "Select teacher level"), [
                                 'class' => 'manage_reg selectpicker form-control show-tick',
                                 'data-type' => ManageRegistration::TYPE_TEACHER_LEVEL,
                                 "title" => "Select teacher level " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_LEVEL) . "...",
@@ -434,62 +418,14 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                         </div>
 
                         <div class="form-group col-sm-8 col-sm-offset-2">
-                        <?php echo $form->dropDownList($manageReg, 'teacher_type', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_TYPE, "Select teacher type"), [
+                        <?php echo Html::activeDropDownList($manageReg, 'teacher_type', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_TYPE, "Select teacher type"), [
                             'class' => 'manage_reg teacher_type selectpicker form-control show-tick',
                             'data-type' => ManageRegistration::TYPE_TEACHER_TYPE,
-                            'title' => "Select teacher type " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_TYPE) . "...",
-                            'ajax' => array(
-                                'type'=>'POST',
-                                'url'=> \Yii::app()->createUrl('/logicenter/popup/getDependTeacherType'),
-                                'update'=>'.subject_area',
-                                'data'=> ['nameTeacherType' => 'js:$(this).val()', 'CSRF_TOKEN' => Yii::app()->request->csrfToken, 'type' => 'js:$(this).data("type")'],
-                                'success' => 'js:function(data) {
-                                    $("select.manage_reg").removeAttr("disabled");
-                                    $("div.manage_reg").removeClass("disabled");
-                                    $("button.dropdown-toggle").removeClass("disabled");
-                                    
-                                    $(".subject_area .dropdown-menu .inner").empty();
-                                    $(".subject_area .dropdown-menu .inner").append(JSON.parse(data).li);
-                                    
-                                    $(".subject_area .btn").attr("title", $(".SubjectAreaText").text()).find(".filter-option").text($(".SubjectAreaText").text());
-                                    
-                                    $("select.subject_area").empty();
-                                    $("select.subject_area").append(JSON.parse(data).option);
-                                    
-                                    $(".subject_area .dropdown-menu li a").on("click",function() {
-                                        $(this).parent("li").toggleClass("selected");
-                                    });
-                                    
-                                    var name = $(".subject_area").attr("name");
-                                    var type = $(".subject_area").data("type");
-                                    if($(".subject_area").val() == "other" && $("input[data-type=\'"+type+"\']").length == 0) {
-                                        $(".subject_area").after("<input name=\'"+name+"\' type=\'text\' data-type=\'"+type+"\'/>");
-                                    } else {
-                                        if($("input[data-type=\'"+type+"\']").length != 0 && $(".subject_area").val() != "other") {
-                                            $("input[data-type=\'"+type+"\']").parents("#teacherlevel-other").remove();
-                                        }
-                                    }
-                                    
-                                    var inputHidden = \'<div id="teacherlevel-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right custom-right-arrow"></i></div>\';
-                                    $(".subject_area ul.dropdown-menu li a").on("click",function() {
-                                        var text = $(this).text();
-                                        var parent = $(this).parents(".form-group").find("select");
-                                        if(text.toLowerCase() == "other") {
-                                            if($("input[data-type="+ parent.data(\'type\') +"]").length == 0) {
-                                                parent.parents(".form-group").after(inputHidden + \'<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="\'+ parent.attr(\'name\') +\'" type="text" data-type="\'+ parent.data(\'type\') +\'" /></div></div>\')
-                                            } else {
-                                                if($("input[data-type="+ parent.data(\'type\') +"]").length == 1) {
-                                                    $("input[data-type="+ parent.data(\'type\') +"]").parents("#teacherlevel-other").remove();
-                                                }
-                                            }
-                                        }
-                                    });
-                                }',
-                        )]); ?>
+                            'title' => "Select teacher type " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_TYPE) . "..."
+                        ]); ?>
                         </div>
-
                         <div class="form-group col-sm-8 col-sm-offset-2">
-                        <?php echo $form->dropDownList($manageReg, 'subject_area', ['Select subject area(s)'=> ["please select teacher type"]]/*LogicEntry::getDropDownDepend()*/, [
+                        <?php echo Html::activeDropDownList($manageReg, 'subject_area', ['Select subject area(s)'=> ["please select teacher type"]]/*LogicEntry::getDropDownDepend()*/, [
                             'class' => 'manage_reg subject_area selectpicker form-control show-tick',
                             'data-type' => ManageRegistration::TYPE_SUBJECT_AREA,
                             'multiple title' => "Select subject area(s) " . LogicEntry::getRequired(ManageRegistration::TYPE_SUBJECT_AREA) . "...",
@@ -499,7 +435,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                         </div>
 
                         <div class="form-group col-sm-8 col-sm-offset-2">
-                        <?php echo $form->dropDownList($manageReg, 'teacher_interest', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_INTEREST, "Select teaching interests"), [
+                        <?php echo Html::activeDropDownList($manageReg, 'teacher_interest', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_INTEREST, "Select teaching interests"), [
                             'class' => 'manage_reg selectpicker form-control show-tick',
                             'data-type' => ManageRegistration::TYPE_TEACHER_INTEREST,
                             'title' => "Select teaching interests " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_INTEREST) . "...",
@@ -514,15 +450,15 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
             <div class="modal-footer">
             	<div class="row">
                     <div class="col-sm-8 col-sm-offset-2">
-                        <?php echo CHtml::submitButton(Yii::t('UserModule.views_auth_login', 'Register'), array('class' => 'btn btn-primary firstmodal')); ?>
-                        <?php $this->endWidget(); ?>
+                        <?php echo Html::submitButton(Yii::t('UserModule.views_auth_login', 'Register'), array('class' => 'btn btn-primary firstmodal')); ?>
+                        <?php \yii\bootstrap\ActiveForm::end(); ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- Privacy Policy Modal -->
+<!--Privacy Policy Modal-->
 <div class="modal" id="modalPrivacy" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -766,18 +702,12 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
         }
 
         return false;
-    }
+    };
 
     $(function() {
         // set cursor to login field
         $('#login_username').focus();
-
-        //IECheck();
-
-        <?php if(strlen($form->error($registerModel, 'email')) > 0){ ?>
-            $('#modalRegister').modal('show');
-        <?php } ?>
-    })
+    });
 
     // Shake panel after wrong validation
     <?php if ($form->errorSummary($model) != null) { ?>
@@ -805,7 +735,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
 
 	// Initialize custom scrollbars
 	(function($){
-        $(window).load(function(){
+        $(window).load(function() {
             $(".modal-body-scroll").mCustomScrollbar({
 				theme:"dark-thick"
 			});
@@ -816,7 +746,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
     })(jQuery);
 
 	// Owl Carousel Script - for rotating quotations
-	$(document).ready(function(){
+	$(document).ready(function() {
 	  $(".owl-carousel").owlCarousel({
 	  	animateOut: 'fadeOutDown',
 		animateIn: 'fadeInDown',
@@ -833,7 +763,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
         // Submit email
         var mailgunURL;
 
-        mailgunURL = '<?php echo Yii::app()->theme->baseUrl; ?>/mail.php';
+        mailgunURL = '<?php echo $this->theme->baseUrl; ?>/mail.php';
 
         $('#mailgun').on('submit',function(e) {
           e.preventDefault();
@@ -869,7 +799,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                 $('#mailgun').html('Submission failed, please contact directly.');
               }
 
-            }
+            };
 
             setTimeout(function() {
                 $(".subject_area .dropdown-menu li a").on("click",function() {
@@ -901,15 +831,16 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                         }
 
                         if(object.flag == "next") {
-                            var email_input = $("#CustomAccountRegisterForm_email").clone();
+                            var email_input = $("#customaccountregisterform-email").clone();
                             email_input.attr("type", 'hidden');
                             email_input.attr("name", "email_domain");
+                            console.log(email_input);
                             $("#account-register-form-second").append(email_input);
                             $("#modalRegister").modal('hide');
                             $("#modalSecondModal").modal("show");
                         }
                     }
-                })
+                });
 
                return false;
             });
@@ -929,6 +860,62 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
             });
 
 
+            $(".teacher_type").on("change", function() {
+                $.ajax({
+                    'type': 'POST',
+                    'url': "<?= Url::toRoute('/logicenter/popup/get-depend-teacher-type') ?>",
+                    'data': {
+                        'nameTeacherType': $(this).val(),
+                        'CSRF_TOKEN': "<?= Yii::$app->request->csrfToken ?>",
+                        'type': $(this).data("type")
+                    },
+                    success: function (data) {
+
+                        $("select.manage_reg").removeAttr("disabled");
+                        $("div.manage_reg").removeClass("disabled");
+                        $("button.dropdown-toggle").removeClass("disabled");
+
+                        $(".subject_area .dropdown-menu .inner").empty();
+                        $(".subject_area .dropdown-menu .inner").append(JSON.parse(data).li);
+
+                        $(".subject_area .btn").attr("title", $(".SubjectAreaText").text()).find(".filter-option").text($(".SubjectAreaText").text());
+
+                        $("select.subject_area").empty();
+                        $("select.subject_area").append(JSON.parse(data).option);
+
+                        $(".subject_area .dropdown-menu li a").on("click", function () {
+                            $(this).parent("li").toggleClass("selected");
+                        });
+
+                        var name = $(".subject_area").attr("name");
+                        var type = $(".subject_area").data("type");
+                        if ($(".subject_area").val() == "other" && $("input[data-type='" + type + "']").length == 0) {
+                            $(".subject_area").after("<input name='" + name + "' type='text' data-type='" + type + "'/>");
+                        } else {
+                            if ($("input[data-type='" + type + "']").length != 0 && $(".subject_area").val() != "other") {
+                                $("input[data-type='" + type + "']").parents("#teacherlevel-other").remove();
+                            }
+                        }
+
+                        var inputHidden = '<div id="teacherlevel-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right custom-right-arrow"></i></div>';
+                        $(".subject_area ul.dropdown-menu li a").on("click", function () {
+                            var text = $(this).text();
+                            var parent = $(this).parents(".form-group").find("select");
+                            if (text.toLowerCase() == "other") {
+                                if ($("input[data-type=" + parent.data('type') + "]").length == 0) {
+                                    parent.parents(".form-group").after(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="' + parent.attr('name') + '" type="text" data-type="' + parent.data('type') + '" /></div></div>');
+                                } else {
+                                    if ($("input[data-type=" + parent.data('type') + "]").length == 1) {
+                                        $("input[data-type=" + parent.data('type') + "]").parents("#teacherlevel-other").remove();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+
             $("#account-register-form-second").submit(function() {
                $.ajax({
                    url     : $(this).attr("action"),
@@ -937,7 +924,7 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                    success : function(data) {
                         var object = JSON.parse(data);
                         if(object.flag == "redirect") {
-                           window.location.href = '<?= Yii::app()->createUrl("/"); ?>';
+                           window.location.href = '<?= Url::toRoute("/"); ?>';
                         }
                         if(object.flag) {
                             $(".blockErrors").fadeIn();
@@ -951,5 +938,4 @@ $this->pageTitle = Yii::t('UserModule.views_auth_login', 'Please sign in');
                 return false;
             });
 	});
-
 </script>

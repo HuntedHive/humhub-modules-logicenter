@@ -1,22 +1,16 @@
 <?php
 
-/**
- * @package humhub.modules.mail
- * @since 0.5
- */
-class LogicNotificationWidget extends HWidget
-{
+namespace humhub\modules\logicenter\widgets;
 
-    public function init()
-    {
-    }
+class LogicNotificationWidget extends \humhub\components\Widget
+{
 
     /**
      * Creates the Wall Widget
      */
     public function run()
     {
-        $this->render('logicNotification');
+       return $this->render('logicNotification');
     }
 
 }

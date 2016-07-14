@@ -1,5 +1,12 @@
 <?php
 
+namespace humhub\modules\logicenter\forms;
+
+use humhub\modules\space\models\Space;
+use yii\base\Model;
+use Yii;
+use humhub\modules\user\models\User;
+
 /**
  * Register Form just collects users e-mail and sends an invite
  *
@@ -7,7 +14,7 @@
  * @since 0.5
  * @author Luke
  */
-class CustomAccountRegisterForm extends CFormModel {
+class CustomAccountRegisterForm extends Model {
 
     public $email;
 
@@ -25,7 +32,7 @@ class CustomAccountRegisterForm extends CFormModel {
 
     public function uniqueEMailValidator($attribute, $params) {
 
-        $email = User::model()->resetScope()->findByAttributes(array('email' => $this->$attribute));
+        $email = User::find()->andWhere(array('email' => $this->$attribute))->one();
         if ($email !== null) {
             $this->addError($attribute, Yii::t('UserModule.forms_AccountRegisterForm', 'E-Mail is already in use! - Try forgot password.'));
         }
@@ -34,7 +41,7 @@ class CustomAccountRegisterForm extends CFormModel {
 
     public function uniqueSecondayEmailValidator($attribute, $params) {
 
-        $email = User::model()->resetScope()->findByAttributes(array('secondery_email' => $this->$attribute));
+        $email = User::find()->andWhere(array('secondary_email' => $this->$attribute))->one();
         if ($email !== null) {
             $this->addError($attribute, Yii::t('UserModule.forms_AccountRegisterForm', 'E-Mail is already in use! - Try forgot password.'));
         }

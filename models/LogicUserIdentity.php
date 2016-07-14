@@ -1,6 +1,15 @@
 <?php
 
-class LogicUserIdentity extends CUserIdentity
+namespace humhub\modules\logicenter\models;
+
+use humhub\modules\user\libs\Ldap;
+use Yii;
+use humhub\models\Setting;
+use humhub\modules\user\models\User;
+use yii\db\Expression;
+
+
+class LogicUserIdentity extends User
 {
 
     const ERROR_NOT_APPROVED = 10;
@@ -53,16 +62,13 @@ class LogicUserIdentity extends CUserIdentity
     private function getUser()
     {
         // Find User
-        $criteria = new CDbCriteria;
-        $criteria->condition = 'secondery_email=:email';
-        $criteria->params = array(':email' => $this->username);
-        $user = User::model()->resetScope()->find($criteria);
+        $user = User::find()->andWhere(['secondery_email' => $this->username])->one();
         // If user not found in db and ldap is enabled, do ldap lookup and create it when found
-        if ($user === null && HSetting::Get('enabled', 'authentication_ldap')) {
+        if ($user === null && Setting::Get('enabled', 'authentication_ldap')) {
             try {
-                $usernameDn = HLdap::getInstance()->ldap->getCanonicalAccountName($this->username, Zend_Ldap::ACCTNAME_FORM_DN);
-                HLdap::getInstance()->handleLdapUser(HLdap::getInstance()->ldap->getNode($usernameDn));
-                $user = User::model()->findByAttributes(array('username' => $this->username));
+                $usernameDn = Ldap::getInstance()->ldap->getCanonicalAccountName($this->username, Zend_Ldap::ACCTNAME_FORM_DN);
+                Ldap::getInstance()->handleLdapUser(Ldap::getInstance()->ldap->getNode($usernameDn));
+                $user = User::find()->andFilterWhere(array('username' => $this->username));
             } catch (Exception $ex) {
                 ;
             }
@@ -108,9 +114,7 @@ class LogicUserIdentity extends CUserIdentity
      */
     private function onSuccessfulAuthenticate($user)
     {
-        $this->errorCode = self::ERROR_NONE;
-
-        $user->last_login = new CDbExpression('NOW()');
+        $user->last_login = new Expression('NOW()');
         $user->save();
 
         $this->_id = $user->id;

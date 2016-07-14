@@ -5,60 +5,74 @@
  * and open the template in the editor.
  */
 
-class PopupController extends CController
+namespace humhub\modules\logicenter\controllers;
+
+use humhub\modules\logicenter\forms\BasicSettingsLogicForm;
+use humhub\modules\logicenter\forms\CustomAccountRegisterForm;
+use humhub\modules\logicenter\models\LogicEntry;
+use humhub\modules\registration\models\ManageRegistration;
+use humhub\modules\space\models\Membership;
+use humhub\modules\space\models\Space;
+use humhub\modules\user\models\Password;
+use humhub\modules\user\models\Profile;
+use humhub\modules\user\models\User;
+use humhub\modules\user\models\forms\AccountLogin;
+use yii\bootstrap\ActiveForm;
+use humhub\models\Setting;
+use humhub\components\Controller;
+use Yii;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
+
+class PopupController extends Controller
 {
 
-    public $layout = "application.modules_core.user.views.layouts.main_auth";
-    public $subLayout = "application.modules_core.user.views.auth._layout";
+    public $subLayout = "@humhub/modules/user/views/layouts/";
+    public $layout = "@humhub/modules/user/views/layouts/main";
 
     public function actionLogin()
     {
         // If user is already logged in, redirect him to the dashboard
-        if (!Yii::app()->user->isGuest) {
-            $this->redirect(Yii::app()->user->returnUrl);
+        if (!Yii::$app->user->isGuest) {
+            $this->redirect(Yii::$app->user->returnUrl);
         }
 
         // Show/Allow Anonymous Registration
-        $canRegister = HSetting::Get('anonymousRegistration', 'authentication_internal');
-        $model = new AccountLoginForm;
-
-        //TODO: Solve this via events!
-        if (Yii::app()->getModule('zsso') != null) {
-            ZSsoModule::beforeActionLogin();
-        }
+        $canRegister = Setting::Get('anonymousRegistration', 'authentication_internal');
+        $model = new AccountLogin();
 
         // if it is ajax validation request
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'account-login-form') {
-            echo CActiveForm::validate($model);
-            Yii::app()->end();
+            echo ActiveForm::validate($model);
+            Yii::$app->end();
         }
 
         // collect user input data
-        if (isset($_POST['AccountLoginForm'])) {
-            $model->attributes = $_POST['AccountLoginForm'];
+        if (isset($_POST['AccountLogin'])) {
+            $model->attributes = $_POST['AccountLogin'];
             // validate user input and redirect to the previous page if valid
-            if ($model->validate() && ($model->login() || $model->secondLogin())) {
-                $user = User::model()->findByPk(Yii::app()->user->id);
-                if (Yii::app()->request->isAjaxRequest) {
-                    $this->htmlRedirect(Yii::app()->user->returnUrl);
+            if ($model->validate() && ($model->login())) {
+                $user = \humhub\modules\user\models\User::findOne(Yii::$app->user->id);
+                if (Yii::$app->request->isAjax) {
+                    return $this->htmlRedirect(Yii::$app->user->returnUrl);
                 } else {
-                    $this->redirect(Yii::app()->user->returnUrl);
+                    return $this->redirect(["/"]);
                 }
             }
         }
         // Always clear password
         $model->password = "";
 
-        $registerModel = new CustomAccountRegisterForm;
+        $registerModel = new CustomAccountRegisterForm();
 
         // Registration enabled?
         if ($canRegister) {
             // if it is ajax validation request
-            if (Yii::app()->request->isAjaxRequest) {
-                $registerModel->attributes = $_POST['CustomAccountRegisterForm'];
+            if (Yii::$app->request->isAjax) {
+                $registerModel->load(Yii::$app->request->post());
                 $registerModel->validate();
 
-                $logic = strtolower(HSetting::GetText("logic_enter"));
+                $logic = strtolower(Setting::GetText("logic_enter"));
                 $ifRegular = $this->ifRegular(explode("then", $logic)[0]);
                 $domain = $this->returnEmail($ifRegular);
 
@@ -75,7 +89,7 @@ class PopupController extends CController
                                 'errors' => $this->implodeAssocArray($registerModel->getErrors()),
                             ]
                         );
-                        Yii::app()->end();
+                        Yii::$app->end();
                     }
 
                     echo json_encode(
@@ -91,40 +105,63 @@ class PopupController extends CController
                                 'errors' => $this->implodeAssocArray($registerModel->getErrors()),
                             ]
                         );
-                        Yii::app()->end();
+                        Yii::$app->end();
                     }
 
                     $usEmail = $_POST['CustomAccountRegisterForm']['email'];
-                    $user = new User;
-                    $user->username = $usEmail;
+                    $user = new User();
+                    $user->scenario = 'registration';
+
+                    $groupModels = \humhub\modules\user\models\Group::find()->orderBy('name ASC')->all();
+                    $defaultUserGroup = \humhub\models\Setting::Get('defaultUserGroup', 'authentication_internal');
+                    $groupFieldType = "dropdownlist";
+                    if ($defaultUserGroup != "") {
+                        $groupFieldType = "hidden";
+                    } else if (count($groupModels) == 1) {
+                        $groupFieldType = "hidden";
+                        $defaultUserGroup = $groupModels[0]->id;
+                    }
+
+                    if ($groupFieldType == 'hidden') {
+                        $user->group_id = $defaultUserGroup;
+                    }
+
+                    $user->username = "username_" . (User::find()->orderBy(['id' => SORT_DESC])->one()->id + 1);
                     $user->email = $usEmail;
+                    $user->status = User::STATUS_ENABLED;
                     $user->save();
 
+                    $userPasswordModel = new Password();
+                    $userPasswordModel->setPassword($user->email);
+                    $userPasswordModel->user_id = $user->getPrimaryKey();
+                    $userPasswordModel->save();
 
-                    $userPassword = new UserPassword;
-                    $userPassword->user_id = $user->id;
-                    $userPassword->setPassword($usEmail);
-                    $userPassword->save();
+                    $profileModel = $user->profile;
+                    $profileModel->scenario = 'registration';
+                    $profileModel->user_id = $user->getPrimaryKey();
+                    $profileModel->firstname = "firstname_" . $user->id;
+                    $profileModel->lastname = "lastname_" . $user->id;
+                    $profileModel->save();
 
-                    $model = new AccountLoginForm;
-                    $model->username = $usEmail;
+                    $model = new AccountLogin();
+                    $model->username = $user->username;
                     $model->password = $usEmail;
 
-                    if ($model->login()) {
+                    if ($model->validate() && $model->login()) {
                         echo json_encode(
                             [
                                 'flag' => 'redirect',
-                                'location' => Yii::app()->createUrl("/"),
+                                'location' => Url::toRoute("/"),
                             ]
                         );
-                        Yii::app()->end();
+                        Yii::$app->end();
                     }
                 }
             }
         }
 
-        $manageReg = new ManageRegistration;
-        if (Yii::app()->request->isAjaxRequest) {
+        $manageReg = new ManageRegistration();
+        if (Yii::$app->request->isAjax) {
         } else {
             echo $this->render('login', array('model' => $model,
                 'registerModel' => $registerModel,
@@ -154,7 +191,7 @@ class PopupController extends CController
                 }
             }
 
-            if(isset($M_Reg['subject_area']) && $keyItem == "subject_area") { // because it dependency and this array given
+            if(isset($M_Reg['subject_area']) && !empty($M_Reg['subject_area']) && $keyItem == "subject_area") { // because it dependency and this array given
                 foreach ($M_Reg['subject_area'] as $subjectItem) {
                     if(!in_array($subjectItem, explode(" ", $valueItem))) {
                         $errors['subject_area'][] = $subjectItem . ' not in ' . '["' . str_replace(' ', '","', $valueItem) . '"]';
@@ -170,8 +207,8 @@ class PopupController extends CController
     public function actionSecondModal()
     {
         $this->validateRequredFields();
-        $logic = strtolower(HSetting::GetText("logic_enter"));
-        $logic_else = HSetting::GetText("logic_else");
+        $logic = strtolower(Setting::GetText("logic_enter"));
+        $logic_else = Setting::GetText("logic_else");
         $ifRegular = $this->ifRegular(explode("then", $logic)[0]);
         $thenRegular = $this->thenRegular(explode("then", $logic)[1])[0][1];
         $if = '';
@@ -180,27 +217,51 @@ class PopupController extends CController
         $if = $this->parseExpression(explode("then", $logic)[0]);
         $domain = $this->returnEmail($ifRegular);
         if(!is_null($domain) && preg_match("/^[\w\W]*.(" . str_replace(" ","|", $mailReg) . ")$/", $_POST['email_domain'])) {
+            $user = new User();
+            $user->scenario = 'registration';
+            $user->status = User::STATUS_ENABLED;
 
-            $user = new User;
-            $user->username = $_POST['email_domain'];
+            $groupModels = \humhub\modules\user\models\Group::find()->orderBy('name ASC')->all();
+            $defaultUserGroup = \humhub\models\Setting::Get('defaultUserGroup', 'authentication_internal');
+            $groupFieldType = "dropdownlist";
+            if ($defaultUserGroup != "") {
+                $groupFieldType = "hidden";
+            } else if (count($groupModels) == 1) {
+                $groupFieldType = "hidden";
+                $defaultUserGroup = $groupModels[0]->id;
+            }
+
+            if ($groupFieldType == 'hidden') {
+                $user->group_id = $defaultUserGroup;
+            }
+
+            $user->username = "username";
             $user->email = $_POST['email_domain'];
             $user->save();
 
-            $userPassword = new UserPassword;
-            $userPassword->user_id = $user->id;
-            $userPassword->setPassword($_POST['email_domain']);
-            $userPassword->save();
+            $userPasswordModel = new Password();
+            $userPasswordModel->setPassword($user->email);
+            $userPasswordModel->user_id = $user->id;
+            $userPasswordModel->save();
+
+            $profileModel = $user->profile;
+            $profileModel->scenario = 'registration';
+            $profileModel->teacher_type = $_POST['ManageRegistration']['teacher_type'];
+            $profileModel->user_id = $user->id;
+            $profileModel->firstname = "firstname_" . $user->id;
+            $profileModel->lastname = "lastname_" . $user->id;
+            $profileModel->save();
 
             if ($if) {
                 $then = explode(",", $thenRegular);
                 if(!empty($then)) {
                     foreach ($then as $circle) {
-                        $space = Space::model()->findByAttributes(['name' => trim($circle)]);
-                        if (!empty($space) && empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
-                            $newMemberSpace = new SpaceMembership;
+                        $space = Space::find()->andWhere(['name' => trim($circle)])->one();
+                        if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
+                            $newMemberSpace = new Membership;
                             $newMemberSpace->space_id = $space->id;
                             $newMemberSpace->user_id = $user->id;
-                            $newMemberSpace->status = SpaceMembership::STATUS_MEMBER;
+                            $newMemberSpace->status = Membership::STATUS_MEMBER;
                             $newMemberSpace->save();
                         }
                     }
@@ -209,37 +270,31 @@ class PopupController extends CController
                 $logic_else_string = explode(",", $logic_else);
                 if(!empty($logic_else_string)) {
                     foreach ($logic_else_string as $circle) {
-                        $space = Space::model()->findByAttributes(['name' => trim($circle)]);
-                        if (!empty($space) && empty(SpaceMembership::model()->findAllByAttributes(['user_id' => $user->id, 'space_id' => $space->id]))) {
-                            $newMemberSpace = new SpaceMembership;
+                        $space = Space::find()->andWhere(['name' => trim($circle)])->one();
+                        if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
+                            $newMemberSpace = new Membership;
                             $newMemberSpace->space_id = $space->id;
                             $newMemberSpace->user_id = $user->id;
-                            $newMemberSpace->status = SpaceMembership::STATUS_MEMBER;
+                            $newMemberSpace->status = Membership::STATUS_MEMBER;
                             $newMemberSpace->save();
                         }
                     }
                 }
             }
 
-            $model = new AccountLoginForm;
+            $model = new AccountLogin();
             $model->username = $user->email;
             $model->password = $_POST['email_domain'];
 
             $this->addOthertoList();
 
-
             if ($model->validate() && $model->login()) {
-                $profile = new Profile();
-                $profile->user_id = Yii::app()->user->id;
-                $profile->teacher_type = $_POST['ManageRegistration']['teacher_type'];
-                $profile->save(false);
-
                 echo json_encode(
                     [
                         'flag' => 'redirect'
                     ]
                 );
-                Yii::app()->end();
+                Yii::$app->end();
             }
         }
 
@@ -248,7 +303,7 @@ class PopupController extends CController
                 'flag' => 'redirect',
             ]
         );
-        Yii::app()->end();
+        Yii::$app->end();
     }
 
     protected function implodeAssocArray($array)
@@ -275,7 +330,7 @@ class PopupController extends CController
         if(!empty($data) && is_array($data)) {
             foreach ($data as $key => $value) {
                 if (isset($typeRever[$key]) && !empty($value) && $key != "subject_area") {
-                    $manageItem = ManageRegistration::model()->findAll('name="' . trim($value) . '"');
+                    $manageItem = ManageRegistration::find()->andWhere(['name' => trim($value)])->one();
                     if (empty($manageItem)) {
                         $manage = new ManageRegistration;
                         $manage->name = trim($value);
@@ -286,7 +341,7 @@ class PopupController extends CController
                 }
 
                 if($key == "teacher_type") {
-                    $existTeacherTypeId = ManageRegistration::model()->find('name="' . trim($value) . '"');
+                    $existTeacherTypeId = ManageRegistration::find()->andWhere(['name' => trim($value)])->one();
                     if(!empty($existTeacherTypeId)) {
                         $dependTeacherTypeId = $existTeacherTypeId->id;
                     }
@@ -310,7 +365,7 @@ class PopupController extends CController
 
     public function validateRequredFields()
     {
-        $required = HSetting::model()->findAll("name='required_manage'");
+        $required = Setting::find()->andWhere(['name' => 'required_manage'])->all();
         $data = $_POST['ManageRegistration'];
         $errors = [];
         foreach ($required as $requiredItem) {
@@ -326,7 +381,7 @@ class PopupController extends CController
 
         if(!empty($errors)) {
             echo json_encode(['flag' => true, 'errors' => '<div class="errorMessage">' . implode("<br>", $errors) . '</div>']);
-            Yii::app()->end();
+            Yii::$app->end();
         }
     }
 
@@ -376,8 +431,8 @@ class PopupController extends CController
         $i = 0;
         if(isset($_POST['type']) && $_POST['type'] == ManageRegistration::TYPE_TEACHER_TYPE && strtolower($_POST['nameTeacherType']) == "other") {
             $sql = 'SELECT t1.name FROM `manage_registration` t1 LEFT JOIN manage_registration t2 ON t1.depend = t2.id WHERE t1.type = 2 AND t2.name = "other"';
-            $data = Yii::app()->db->createCommand($sql)->queryAll();
-            $data = CHtml::listData($data, "name", "name");
+            $data = Yii::$app->db->createCommand($sql)->queryAll();
+            $data = ArrayHelper::getColumn($data, ["name" => "name"]);
             if (!empty($data)) {
                 $list = $this->toUl($data);
                 $options = $this->toOptions($data);
@@ -385,10 +440,11 @@ class PopupController extends CController
                 $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
             }
         } else {
-            $idByName = ManageRegistration::model()->find('name="' . $name . '" and type=' . ManageRegistration::TYPE_TEACHER_TYPE);
+            $idByName = ManageRegistration::find()->andWhere(['name' => $name, 'type' => ManageRegistration::TYPE_TEACHER_TYPE])->one();
                 if (!empty($idByName)) {
-                    $list = $this->toUl(CHtml::listData(ManageRegistration::model()->findAll('name!="'.ManageRegistration::VAR_OTHER.'" AND depend=' . $idByName->id), 'name', 'name'));
-                    $options = $this->toOptions(CHtml::listData(ManageRegistration::model()->findAll('name!="'.ManageRegistration::VAR_OTHER.'" AND depend=' . $idByName->id), 'name', 'name'));
+                    $data = ArrayHelper::getColumn(ManageRegistration::find()->andWhere('name!="'.ManageRegistration::VAR_OTHER.'" AND depend=' . $idByName->id)->all(), ['name' => 'name']);
+                    $list = $this->toUl($data);
+                    $options = $this->toOptions($data);
                 } else {
 //                    $list .= '<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">other</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
                 }

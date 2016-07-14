@@ -1,10 +1,15 @@
 <?php
 
+namespace humhub\modules\logicenter\forms;
+
+use humhub\modules\space\models\Space;
+use yii\base\Model;
+use Yii;
 /**
  * @package humhub.modules_core.admin.forms
  * @since 0.5
  */
-class BasicSettingsLogicForm extends CFormModel
+class BasicSettingsLogicForm extends Model
 {
 
     public $name;
@@ -22,13 +27,13 @@ class BasicSettingsLogicForm extends CFormModel
     public function rules()
     {
         return array(
-            array('name, baseUrl', 'required'),
-            array('name', 'length', 'max' => 150),
-            array('logic_enter', 'length', 'max' => 255),
-            array('logic_else', 'length', 'max' => 255),
-            array('defaultLanguage', 'in', 'range' => array_keys(Yii::app()->params['availableLanguages'])),
+            array(['name', 'baseUrl'], 'required'),
+            array('name', 'string', 'max' => 150),
+            array('logic_enter', 'string', 'max' => 255),
+            array('logic_else', 'string', 'max' => 255),
+            array('defaultLanguage', 'in', 'range' => array_keys(Yii::$app->params['availableLanguages'])),
             array('defaultSpaceGuid', 'checkSpaceGuid'),
-            array('tour, dashboardShowProfilePostForm', 'in', 'range' => array(0, 1))
+            array(['tour', 'dashboardShowProfilePostForm'], 'in', 'range' => array(0, 1))
         );
     }
 
@@ -64,7 +69,7 @@ class BasicSettingsLogicForm extends CFormModel
 
             foreach (explode(',', $this->defaultSpaceGuid) as $spaceGuid) {
                 if ($spaceGuid != "") {
-                    $space = Space::model()->findByAttributes(array('guid' => $spaceGuid));
+                    $space = Space::find()->andWhere(['guid' => $spaceGuid])->one();
                     if ($space == null) {
                         $this->addError($attribute, Yii::t('AdminModule.forms_BasicSettingsForm', "Invalid space"));
                     }

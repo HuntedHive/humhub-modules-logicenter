@@ -1,11 +1,13 @@
 <?php
 
-class m160524_141518_add_first_logic extends EDbMigration
+use humhub\models\Setting;
+
+class m160524_141518_add_first_logic extends \yii\db\Migration
 {
 	public function up()
 	{
-		HSetting::SetText("logic_enter", 'IF teacher_type = "math math2" and teacher_level = "level" and subject_area = "math math2" and email_domain = "edu.au" THEN insert into "Welcome Space, default, some-some"');
-		HSetting::SetText("logic_else",'Welcome Space, default, some, callback');
+		Setting::SetText("logic_enter", 'IF teacher_type = "math math2" and teacher_level = "level" and subject_area = "math math2" and email_domain = "edu.au" THEN insert into "Welcome Space, default, some-some"');
+		Setting::SetText("logic_else",'Welcome Space, default, some, callback');
 	}
 
 	public function down()
