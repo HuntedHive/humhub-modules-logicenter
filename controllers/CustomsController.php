@@ -25,6 +25,7 @@ class CustomsController extends Controller
 
         $form = new BasicSettingsLogicForm();
         $form->name = Setting::Get('name');
+        Setting::Set('baseUrl', \yii\helpers\BaseUrl::base(true));
         $form->baseUrl = Setting::Get('baseUrl');
         $form->defaultLanguage = Setting::Get('defaultLanguage');
         $form->dashboardShowProfilePostForm = Setting::Get('showProfilePostForm', 'dashboard');
