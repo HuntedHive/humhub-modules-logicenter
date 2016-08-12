@@ -2,6 +2,7 @@
 
 namespace humhub\modules\logicenter\controllers;
 
+use humhub\libs\DynamicConfig;
 use humhub\modules\logicenter\forms\BasicSettingsLogicForm;
 use humhub\modules\space\models\Space;
 use yii\bootstrap\ActiveForm;
@@ -50,6 +51,7 @@ class CustomsController extends Controller
 
                 $form->logic_enter = $this->validateText($form->logic_enter);
                 preg_match("/[\s]{2,}/", $form->logic_enter, $emptyR);
+
                 if(empty($emptyR)) {
                     Setting::Set('name', $form->name);
                     Setting::Set('baseUrl', $form->baseUrl);
@@ -77,10 +79,11 @@ class CustomsController extends Controller
                             $space->save();
                         }
                     }
-
+                    DynamicConfig::rewrite();
                     // set flash message
                     Yii::$app->session->setFlash('data-saved', Yii::t('AdminModule.controllers_SettingController', 'Saved'));
                 }
+
                 $this->redirect(['//admin/setting/basic']);
             }
         }
