@@ -214,18 +214,18 @@ use humhub\modules\registration\models\ManageRegistration;
                     <h3>Contact Us</h3>
                     <form class="form" id="mailgun" role="form" method="POST">
                         <div class="form-group">
-                            <input type="name" id="name" name="name" class="form-control" placeholder="Name" required>
+                            <input type="name" id="name" name="ContactForm[name]" class="form-control" placeholder="Name" required>
                         </div>
 
                         <div class="form-group">
-                            <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
+                            <input type="email" id="email" name="ContactForm[email]" class="form-control" placeholder="Email" required>
                         </div>
 
                         <div class="form-group">
-                            <textarea id="message" name="message" rows="6" class="form-control" placeholder="Message" required></textarea>
+                            <textarea id="message" name="ContactForm[content]" rows="6" class="form-control" placeholder="Message" required></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Send</button>
+                        <input type="submit" class="btn btn-primary" value="Send">
                     </form>
                 </div>
 
@@ -763,7 +763,7 @@ use humhub\modules\registration\models\ManageRegistration;
         // Submit email
         var mailgunURL;
 
-        mailgunURL = '<?php echo $this->theme->baseUrl; ?>/mail.php';
+        mailgunURL = '<?php echo Url::toRoute("/user/auth/login"); ?>';
 
         $('#mailgun').on('submit',function(e) {
           e.preventDefault();
@@ -778,7 +778,6 @@ use humhub\modules\registration\models\ManageRegistration;
             data     : $(this).serialize(),
             success  : function(data) {
               responseSuccess(data);
-              console.log(data);
             },
             error  : function(data) {
               console.log('Silent failure.');
@@ -790,15 +789,11 @@ use humhub\modules\registration\models\ManageRegistration;
         });
 
             function responseSuccess(data) {
-
-              data = JSON.parse(data);
-
-              if(data.status === 'success') {
+              if(data == 1) {
                 $('#mailgun').html('Submission sent succesfully.');
               } else {
                 $('#mailgun').html('Submission failed, please contact directly.');
               }
-
             };
 
             setTimeout(function() {

@@ -8,6 +8,7 @@
 namespace humhub\modules\logicenter\controllers;
 
 use humhub\modules\logicenter\forms\BasicSettingsLogicForm;
+use humhub\modules\logicenter\forms\ContactForm;
 use humhub\modules\logicenter\forms\CustomAccountRegisterForm;
 use humhub\modules\logicenter\models\LogicEntry;
 use humhub\modules\registration\models\ManageRegistration;
@@ -66,7 +67,7 @@ class PopupController extends Controller
         $registerModel = new CustomAccountRegisterForm();
 
         // Registration enabled?
-        if ($canRegister) {
+        if ($canRegister && isset($_POST['CustomAccountRegisterForm'])) {
             // if it is ajax validation request
             if (Yii::$app->request->isAjax) {
                 $registerModel->load(Yii::$app->request->post());
@@ -160,13 +161,33 @@ class PopupController extends Controller
             }
         }
 
+
+        $contact = new ContactForm();
+        if(Yii::$app->request->isPost && isset($_POST['ContactForm'])) {
+            $contact->load(Yii::$app->request->post());
+            if ($contact->validate()) {
+                Yii::$app->getSession()->setFlash("success_", "Your message send successful");
+                Yii::$app->mailer->compose()
+                    ->setFrom(\humhub\models\Setting::Get('systemEmailAddress', 'mailing'))
+                    ->setTo($contact->email)
+                    ->setSubject("ContactUs:" . $contact->name)
+                    ->setTextBody($contact->content)
+                    ->send();
+                return true;
+            }
+
+            return false;
+        }
+
         $manageReg = new ManageRegistration();
         if (Yii::$app->request->isAjax) {
         } else {
             echo $this->render('login', array('model' => $model,
                 'registerModel' => $registerModel,
                 'canRegister' => $canRegister,
-                'manageReg' => $manageReg)
+                'manageReg' => $manageReg,
+                'contact' => $contact,
+                )
             );
         }
     }
