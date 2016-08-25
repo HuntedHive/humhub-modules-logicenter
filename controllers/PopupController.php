@@ -127,10 +127,18 @@ class PopupController extends Controller
                         $user->group_id = $defaultUserGroup;
                     }
 
-                    $user->username = "username_" . (User::find()->orderBy(['id' => SORT_DESC])->one()->id + 1);
+                    // Generate a random first name
+                    $firstNameOptions = explode("\n", Setting::GetText('anonAccountsFirstNameOptions'));
+                    $randomFirstName = trim(ucfirst($firstNameOptions[array_rand($firstNameOptions)]));
+
+                    // Generate a random last name
+                    $lastNameOptions = explode("\n", Setting::GetText('anonAccountsLastNameOptions'));
+                    $randomLastName = trim(ucfirst($lastNameOptions[array_rand($lastNameOptions)]));
+
+                    $user->username = substr(str_replace(" ", "_", strtolower($randomFirstName . "_" . $randomLastName)), 0, 25);
                     $user->email = $usEmail;
                     $user->status = User::STATUS_ENABLED;
-                    $user->save();
+                    $user->save(false);
 
                     $userPasswordModel = new Password();
                     $userPasswordModel->setPassword($user->email);
@@ -140,8 +148,8 @@ class PopupController extends Controller
                     $profileModel = $user->profile;
                     $profileModel->scenario = 'registration';
                     $profileModel->user_id = $user->getPrimaryKey();
-                    $profileModel->firstname = "firstname_" . $user->id;
-                    $profileModel->lastname = "lastname_" . $user->id;
+                    $profileModel->firstname = $randomFirstName;
+                    $profileModel->lastname = $randomLastName;
                     $profileModel->save();
 
                     $model = new AccountLogin();
@@ -256,9 +264,18 @@ class PopupController extends Controller
                 $user->group_id = $defaultUserGroup;
             }
 
-            $user->username = "username";
+
+            // Generate a random first name
+            $firstNameOptions = explode("\n", Setting::GetText('anonAccountsFirstNameOptions'));
+            $randomFirstName = trim(ucfirst($firstNameOptions[array_rand($firstNameOptions)]));
+
+            // Generate a random last name
+            $lastNameOptions = explode("\n", Setting::GetText('anonAccountsLastNameOptions'));
+            $randomLastName = trim(ucfirst($lastNameOptions[array_rand($lastNameOptions)]));
+
+            $user->username = substr(str_replace(" ", "_", strtolower($randomFirstName . "_" . $randomLastName)), 0, 25);
             $user->email = $_POST['email_domain'];
-            $user->save();
+            $user->save(false);
 
             $userPasswordModel = new Password();
             $userPasswordModel->setPassword($user->email);
@@ -269,8 +286,8 @@ class PopupController extends Controller
             $profileModel->scenario = 'registration';
             $profileModel->teacher_type = $_POST['ManageRegistration']['teacher_type'];
             $profileModel->user_id = $user->id;
-            $profileModel->firstname = "firstname_" . $user->id;
-            $profileModel->lastname = "lastname_" . $user->id;
+            $profileModel->firstname = $randomFirstName;
+            $profileModel->lastname = $randomLastName;
             $profileModel->save();
 
             if ($if) {
