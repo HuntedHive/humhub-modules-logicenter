@@ -327,6 +327,9 @@ class PopupController extends Controller
             $this->addOthertoList();
 
             if ($model->validate() && $model->login()) {
+                if (isset($_POST['ManageRegistration']['teacher_type']) && !empty($_POST['ManageRegistration']['teacher_type'])) {
+                    setcookie("teacher_type_" . $user->id, "user_" . $user->id, time() + (86400 * 30 * 10), "/");
+                }
                 echo json_encode(
                     [
                         'flag' => 'redirect'
