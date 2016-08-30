@@ -42,7 +42,7 @@ if(LogicEntry::getStatusHomeOfUser()) {
 
         $(".listOrderLoad").animate({opacity: 1}, 500);
 
-        $.post('<?= Yii::getAlias("@web") . '/resources' ?>' + '/space/spacechooser.js', function (data) {
+        $.get('<?= Yii::getAlias("@web") . '/resources' ?>' + '/space/spacechooser.js', function (data) {
            $("body").append('<script type="text/javascript">' + data + '<\/script>');
         });
     });
