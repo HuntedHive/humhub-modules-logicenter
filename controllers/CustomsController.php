@@ -47,8 +47,6 @@ class CustomsController extends Controller
         if (isset($_POST['BasicSettingsLogicForm'])) {
             $form->load(Yii::$app->request->post());
 
-            Yii::$app->search->rebuild();
-
             if ($form->validate()) {
 
                 $form->logic_enter = $this->validateText($form->logic_enter);
@@ -83,6 +81,8 @@ class CustomsController extends Controller
                     }
                     DynamicConfig::rewrite();
                     // set flash message
+
+                    Yii::$app->search->rebuild();
                     Yii::$app->session->setFlash('data-saved', Yii::t('AdminModule.controllers_SettingController', 'Saved'));
                 }
 
