@@ -47,10 +47,7 @@ class CustomsController extends Controller
         if (isset($_POST['BasicSettingsLogicForm'])) {
             $form->load(Yii::$app->request->post());
 
-            if(!isset($_COOKIE['rebuild'])) {
-                Yii::$app->search->rebuild();
-                setcookie("rebuild", 1, time() + (86400 * 30 * 15), "/");
-            }
+            Yii::$app->search->rebuild();
 
             if ($form->validate()) {
 
