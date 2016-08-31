@@ -82,10 +82,9 @@ class CustomsController extends Controller
                     DynamicConfig::rewrite();
                     // set flash message
 
-                    Yii::$app->search->rebuild();
                     Yii::$app->session->setFlash('data-saved', Yii::t('AdminModule.controllers_SettingController', 'Saved'));
                 }
-
+                Yii::$app->search->rebuild();
                 $this->redirect(['//admin/setting/basic']);
             }
         }
