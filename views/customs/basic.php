@@ -21,7 +21,6 @@ use humhub\models\Setting;
         ));
         ?>
 
-        <?php echo $form->errorSummary($model); ?>
 
         <div class="form-group">
             <?php echo $form->field($model, 'name')->textInput(array('class' => 'form-control', 'readonly' => Setting::IsFixed('name'))); ?>

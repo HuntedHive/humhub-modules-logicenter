@@ -48,7 +48,6 @@ class CustomsController extends Controller
             $form->load(Yii::$app->request->post());
 
             if ($form->validate()) {
-
                 $form->logic_enter = $this->validateText($form->logic_enter);
                 preg_match("/[\s]{2,}/", $form->logic_enter, $emptyR);
 
@@ -83,12 +82,16 @@ class CustomsController extends Controller
                     // set flash message
 
                     Yii::$app->session->setFlash('data-saved', Yii::t('AdminModule.controllers_SettingController', 'Saved'));
+                } else {
+                    $form->addError("logic_enter", "Parsing string error");
+                    return $this->render('basic', array('model' => $form));
                 }
+
                 Yii::$app->search->rebuild();
                 $this->redirect(['//admin/setting/basic']);
             }
         }
-        
+
         return $this->render('basic', array('model' => $form));
     }
 
