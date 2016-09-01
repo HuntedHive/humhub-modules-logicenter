@@ -7,6 +7,12 @@ use humhub\models\Setting;
 	.form-control-code{
 		font-family: 'Courier';
 	}
+
+    .space-acronym {
+        color: #fff;
+        text-align: center;
+        display: inline-block;
+    }
 </style>
 
 <div class="panel panel-default">

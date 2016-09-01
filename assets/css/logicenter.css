@@ -54,3 +54,9 @@
   margin: 14px;
   font-size: 19px !important;
 }
+
+.space-acronym {
+  color: #fff;
+  text-align: center;
+  display: inline-block;
+}
