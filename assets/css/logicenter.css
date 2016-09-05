@@ -60,3 +60,7 @@
   text-align: center;
   display: inline-block;
 }
+
+body.login-container {
+  padding-top: 50px;
+}
