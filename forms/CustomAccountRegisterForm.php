@@ -6,7 +6,7 @@ use humhub\modules\space\models\Space;
 use yii\base\Model;
 use Yii;
 use humhub\modules\user\models\User;
-
+use humhub\modules\user\models\forms\AccountRegister;
 /**
  * Register Form just collects users e-mail and sends an invite
  *
@@ -14,7 +14,7 @@ use humhub\modules\user\models\User;
  * @since 0.5
  * @author Luke
  */
-class CustomAccountRegisterForm extends Model {
+class CustomAccountRegisterForm extends AccountRegister {
 
     public $email;
 
@@ -31,7 +31,6 @@ class CustomAccountRegisterForm extends Model {
     }
 
     public function uniqueEMailValidator($attribute, $params) {
-
         $email = User::find()->andWhere(array('email' => $this->$attribute))->one();
         if ($email !== null) {
             $this->addError($attribute, Yii::t('UserModule.forms_AccountRegisterForm', 'E-Mail is already in use! - Try forgot password.'));
