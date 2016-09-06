@@ -254,9 +254,10 @@ class PopupController extends Controller
         $model->username = $user->email;
         $model->password = $registerModel->email;
 
-        $this->addOthertoList();
-
         if ($model->validate() && $model->login()) {
+
+            $this->addOthertoList();
+
             if (isset($_POST['ManageRegistration']['teacher_type']) && !empty($_POST['ManageRegistration']['teacher_type'])) {
                 setcookie("teacher_type_" . $user->id, "user_" . $user->id, time() + (86400 * 30 * 10), "/");
             }
