@@ -299,7 +299,7 @@ class PopupController extends Controller
         $existTeacherTypeId = '';
         if(!empty($data) && is_array($data)) {
             foreach ($data as $key => $value) {
-                if (isset($typeRever[$key]) && !empty($value) && $key != "subject_area") {
+                if (isset($typeRever[$key]) && !empty($value) && $key != "subject_area" && $key != "teacher_interest") {
                     $manageItem = ManageRegistration::find()->andWhere(['name' => trim($value)])->one();
                     if (empty($manageItem)) {
                         $manage = new ManageRegistration;
@@ -325,6 +325,18 @@ class PopupController extends Controller
                             $manage2->type = ManageRegistration::TYPE_SUBJECT_AREA;
                             $manage2->default = ManageRegistration::DEFAULT_DEFAULT;
                             $manage2->depend = $dependTeacherTypeId;
+                            $manage2->save(false);
+                        }
+                    }
+                }
+
+                if(!empty($value) && $key == "teacher_interest" && is_array($value)) {
+                    foreach ($value as $itemSubject) {
+                        $manageItem = ManageRegistration::find()->andWhere(['name' => trim($itemSubject)])->one();
+                        if (empty($manageItem)) {
+                            $manage2 = new ManageRegistration;
+                            $manage2->name = trim($itemSubject);
+                            $manage2->default = ManageRegistration::DEFAULT_DEFAULT;
                             $manage2->save(false);
                         }
                     }

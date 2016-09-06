@@ -436,8 +436,10 @@ use humhub\modules\registration\models\ManageRegistration;
 
                         <div class="form-group col-sm-8 col-sm-offset-2">
                         <?php echo Html::activeDropDownList($manageReg, 'teacher_interest', LogicEntry::getDropDown(ManageRegistration::TYPE_TEACHER_INTEREST, "Select teaching interests"), [
-                            'class' => 'manage_reg selectpicker form-control show-tick',
+                            'class' => 'manage_reg teacher_interest selectpicker form-control show-tick',
                             'data-type' => ManageRegistration::TYPE_TEACHER_INTEREST,
+                            'multiple title' => "Select teaching interests " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_INTEREST) . "...",
+                            'multiple'=>'multiple',
                             'title' => "Select teaching interests " . LogicEntry::getRequired(ManageRegistration::TYPE_TEACHER_INTEREST) . "...",
                         ]) ?>
                         </div>
@@ -804,7 +806,23 @@ use humhub\modules\registration\models\ManageRegistration;
                 });
 
                 $(".SubjectAreaText").text($(".subject_area .btn").attr("title"));
-            }, 1000);
+
+                var inputHidden_interest = '<div id="teacher_interest-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right custom-right-arrow"></i></div>';
+                $(".teacher_interest ul.dropdown-menu li a").on("click", function () {
+                    var text = $(this).text();
+                    var parent = $(this).parents(".form-group").find("select");
+                    console.log(text);
+                    if (text.toLowerCase() == "other") {
+                        if ($("input[data-type=" + parent.data('type') + "]").length == 0) {
+                            parent.parents(".form-group").after(inputHidden_interest + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="' + parent.attr('name') + '" type="text" data-type="' + parent.data('type') + '" /></div></div>');
+                        } else {
+                            if ($("input[data-type=" + parent.data('type') + "]").length == 1) {
+                                $("input[data-type=" + parent.data('type') + "]").parents("#teacher_interest-other").remove();
+                            }
+                        }
+                    }
+                });
+            }, 1500);
 
 
             $("#account-register-form").on("submit", function (data) {
@@ -829,11 +847,9 @@ use humhub\modules\registration\models\ManageRegistration;
                             var email_input = $("#customaccountregisterform-email").clone();
                             email_input.attr("type", 'hidden');
                             email_input.attr("id", "email_domain");
-                            if(!$("#email_domain").length) {
-                                $("#account-register-form-second").append(email_input);
-                                $("#modalRegister").modal('hide');
-                                $("#modalSecondModal").modal("show");
-                            }
+                            $("#account-register-form-second").append(email_input);
+                            $("#modalRegister").modal('hide');
+                            $("#modalSecondModal").modal("show");
                         }
                     }
                 });
@@ -841,15 +857,15 @@ use humhub\modules\registration\models\ManageRegistration;
                return false;
             });
 
-            var inputHidden = '<div id="teacherlevel-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right custom-right-arrow"></i></div>';
+            var inputHiddent = '<div id="teacherlevelt-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right custom-right-arrow"></i></div>';
 
             $(".manage_reg").change(function() {
-                if(!$(this).hasClass("subject_area")) {
+                if(!$(this).hasClass("subject_area") && !$(this).hasClass("teacher_interest")) {
                     if ($(this).val() == "other") {
-                        $(this).parent(".form-group").after(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="' + $(this).attr('name') + '" type="text" data-type="' + $(this).data('type') + '" /></div></div>');
+                        $(this).parent(".form-group").after(inputHiddent + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="' + $(this).attr('name') + '" type="text" data-type="' + $(this).data('type') + '" /></div></div>');
                     } else {
                         if ($("input[data-type=" + $(this).data('type') + "]")) {
-                            $("input[data-type=" + $(this).data('type') + "]").parents("#teacherlevel-other").remove();
+                            $("input[data-type=" + $(this).data('type') + "]").parents("#teacherlevelt-other").remove();
                         }
                     }
                 }
@@ -893,16 +909,16 @@ use humhub\modules\registration\models\ManageRegistration;
                             }
                         }
 
-                        var inputHidden = '<div id="teacherlevel-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right custom-right-arrow"></i></div>';
+                        var inputHidden_subject = '<div id="subject_area-other"><div class="form-group col-xs-2 col-sm-1 col-sm-offset-2 indent-other"><i class="fa fa-arrow-right custom-right-arrow"></i></div>';
                         $(".subject_area ul.dropdown-menu li a").on("click", function () {
                             var text = $(this).text();
                             var parent = $(this).parents(".form-group").find("select");
                             if (text.toLowerCase() == "other") {
                                 if ($("input[data-type=" + parent.data('type') + "]").length == 0) {
-                                    parent.parents(".form-group").after(inputHidden + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="' + parent.attr('name') + '" type="text" data-type="' + parent.data('type') + '" /></div></div>');
+                                    parent.parents(".form-group").after(inputHidden_subject + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="' + parent.attr('name') + '" type="text" data-type="' + parent.data('type') + '" /></div></div>');
                                 } else {
                                     if ($("input[data-type=" + parent.data('type') + "]").length == 1) {
-                                        $("input[data-type=" + parent.data('type') + "]").parents("#teacherlevel-other").remove();
+                                        $("input[data-type=" + parent.data('type') + "]").parents("#subject_area-other").remove();
                                     }
                                 }
                             }
