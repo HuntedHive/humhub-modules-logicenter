@@ -828,11 +828,12 @@ use humhub\modules\registration\models\ManageRegistration;
                         if(object.flag == "next") {
                             var email_input = $("#customaccountregisterform-email").clone();
                             email_input.attr("type", 'hidden');
-                            email_input.attr("name", "email_domain");
-                            console.log(email_input);
-                            $("#account-register-form-second").append(email_input);
-                            $("#modalRegister").modal('hide');
-                            $("#modalSecondModal").modal("show");
+                            email_input.attr("id", "email_domain");
+                            if(!$("#email_domain").length) {
+                                $("#account-register-form-second").append(email_input);
+                                $("#modalRegister").modal('hide');
+                                $("#modalSecondModal").modal("show");
+                            }
                         }
                     }
                 });
