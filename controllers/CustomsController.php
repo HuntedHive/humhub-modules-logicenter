@@ -23,12 +23,13 @@ class CustomsController extends Controller
         if(!Yii::$app->user->isAdmin()) {
             return $this->redirect(['/']);
         }
-
+        
         $form = new BasicSettingsLogicForm();
         $form->name = Setting::Get('name');
         Setting::Set('baseUrl', \yii\helpers\BaseUrl::base(true));
         $form->baseUrl = Setting::Get('baseUrl');
         $form->defaultLanguage = Setting::Get('defaultLanguage');
+        $form->timeZone = Setting::Get('timeZone');
         $form->dashboardShowProfilePostForm = Setting::Get('showProfilePostForm', 'dashboard');
         $form->tour = Setting::Get('enable', 'tour');
         $form->logic_enter = Setting::GetText('logic_enter');
@@ -56,6 +57,7 @@ class CustomsController extends Controller
                     Setting::Set('baseUrl', $form->baseUrl);
                     Setting::Set('defaultLanguage', $form->defaultLanguage);
                     Setting::Set('enable', $form->tour, 'tour');
+                    Setting::Set('timeZone', $form->timeZone);
                     Setting::Set('showProfilePostForm', $form->dashboardShowProfilePostForm, 'dashboard');
                     Setting::SetText('logic_enter', $form->logic_enter);
                     Setting::SetText('logic_else', $form->logic_else);

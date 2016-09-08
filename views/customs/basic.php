@@ -54,6 +54,10 @@ use humhub\models\Setting;
             ?>
         </div>
 
+        <div class="form-group">
+            <?php echo $form->field($model, 'timeZone')->dropdownList(\humhub\libs\TimezoneHelper::generateList()); ?>
+        </div>
+
         <label><?php echo Yii::t('AdminModule.views_setting_index', 'Matching Logic'); ?></label>
         <div class="form-group">
             <p class="help-block">
@@ -84,6 +88,9 @@ use humhub\models\Setting;
         <div class="form-group">
             <div class="checkbox">
                 <?php echo \yii\helpers\Html::activeCheckbox($model, 'tour'); ?>
+            </div>
+            <div class="checkbox">
+                <?php echo \yii\helpers\Html::activeCheckbox($model, 'share'); ?>
             </div>
             <div class="checkbox">
                 <?php echo \yii\helpers\Html::activeCheckbox($model, 'dashboardShowProfilePostForm'); ?>

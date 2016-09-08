@@ -2,6 +2,7 @@
 
 namespace humhub\modules\logicenter\forms;
 
+use humhub\modules\admin\models\forms\BasicSettingsForm;
 use humhub\modules\space\models\Space;
 use yii\base\Model;
 use Yii;
@@ -9,7 +10,7 @@ use Yii;
  * @package humhub.modules_core.admin.forms
  * @since 0.5
  */
-class BasicSettingsLogicForm extends Model
+class BasicSettingsLogicForm extends BasicSettingsForm
 {
 
     public $name;
@@ -32,6 +33,7 @@ class BasicSettingsLogicForm extends Model
             array('logic_enter', 'string', 'max' => 255),
             array('logic_else', 'string', 'max' => 255),
             array('defaultLanguage', 'in', 'range' => array_keys(Yii::$app->params['availableLanguages'])),
+            array('timeZone', 'in', 'range' => \DateTimeZone::listIdentifiers()),
             array('defaultSpaceGuid', 'checkSpaceGuid'),
             array(['tour', 'dashboardShowProfilePostForm'], 'in', 'range' => array(0, 1))
         );
