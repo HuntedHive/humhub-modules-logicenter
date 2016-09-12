@@ -24,7 +24,7 @@ use humhub\modules\registration\models\ManageRegistration;
 <div class="SubjectAreaText hidden"></div>
 <div class="text-center login-container-home">
 
-	<nav class="navbar navbar-fixed-top topbar" id="topbar-first">
+	<nav class="navbar navbar-fixed-top topbar topbarNav" id="topbar-first">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -729,10 +729,8 @@ use humhub\modules\registration\models\ManageRegistration;
 
 
 	// Hide responsive menu on tap (on small screens only)
-	$('.nav a').on('click', function(){
-		if( $('.outside .navbar-collapse').css('background-color') == 'rgb(32, 179, 176)' )  {
-			$(".navbar-toggle").click();
-		}
+	$('.nav a').on('click', function() {
+        $(".navbar-toggle").click();
 	});
 
 	// Initialize custom scrollbars
