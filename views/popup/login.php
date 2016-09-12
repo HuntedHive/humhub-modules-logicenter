@@ -24,7 +24,7 @@ use humhub\modules\registration\models\ManageRegistration;
 <div class="SubjectAreaText hidden"></div>
 <div class="text-center login-container-home">
 
-	<nav class="navbar navbar-fixed-top topbar topbarNav" id="topbar-first">
+	<nav class="navbar navbar-fixed-top topbar" id="topbar-first">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -37,7 +37,7 @@ use humhub\modules\registration\models\ManageRegistration;
               <?= \humhub\widgets\SiteLogo::widget(); ?>
           </div>
         </div>
-        <div id="navbar" class="collapse navbar-collapse">
+        <div id="navbar" class="collapse navbar-collapse topbarNav">
             <ul class="nav navbar-nav navbar-right">
                 <li class="active"><a onclick="$('#about').animatescroll({padding:50, scrollSpeed:1000,easing:'easeInOutCirc'});">
                 	What is TeachConnect?</a></li>
