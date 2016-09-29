@@ -24,13 +24,47 @@ use humhub\components\Controller;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use humhub\modules\user\models\Invite;
+use yii\web\HttpException;
 
 class PopupController extends Controller
 {
 
     public $subLayout = "@humhub/modules/user/views/layouts/";
     public $layout = "@humhub/modules/user/views/layouts/main";
+    
+    /**
+     * After the user validated his email
+     *
+     */
+    public function actionEmailValidate()
+    {
+        $token = Yii::$app->request->get('token');
+        $userInvite = Invite::findOne(['token' => $token]);
 
+        // Check if Token is valid
+        if (empty($userInvite)) {
+            throw new HttpException(404, Yii::t('UserModule.controllers_AccountController', 'Invalid link! Please make sure that you entered the entire url.'));
+        }
+
+        // Check if E-Mail is in use, e.g. by other user
+        $user = \humhub\modules\user\models\User::findOne(['email' => $userInvite->email]);
+        if ($user == null) {
+            throw new HttpException(404, Yii::t('UserModule.controllers_AccountController', 'Not found user'));
+        }
+
+        $user->status = User::STATUS_ENABLED;
+        $user->save();
+
+        $model = new AccountLogin();
+        $model->username = $user->email;
+        $model->password = $user->email;
+        if($model->validate() && $model->login()) {
+            // add session error if need
+        }
+        return $this->redirect(Url::toRoute('/'));
+    }
+    
     public function actionLogin()
     {
         // If user is already logged in, redirect him to the dashboard
@@ -203,7 +237,7 @@ class PopupController extends Controller
         $lastNameOptions = explode("\n", Setting::GetText('anonAccountsLastNameOptions'));
         $randomLastName = trim(ucfirst($lastNameOptions[array_rand($lastNameOptions)]));
 
-        $user->username = substr(str_replace(" ", "_", strtolower($randomFirstName . "_" . $randomLastName)), 0, 25);
+        $user->username = substr($randomFirstName . " " . $randomLastName, 0, 25);
         $user->email = $registerModel->email;
         $user->save(false);
 
@@ -250,28 +284,17 @@ class PopupController extends Controller
             }
         }
 
-        $model = new AccountLogin();
-        $model->username = $user->email;
-        $model->password = $registerModel->email;
+       $this->addOthertoList();
 
-        if ($model->validate() && $model->login()) {
-
-            $this->addOthertoList();
-
-            if (isset($_POST['ManageRegistration']['teacher_type']) && !empty($_POST['ManageRegistration']['teacher_type'])) {
-                setcookie("teacher_type_" . $user->id, "user_" . $user->id, time() + (86400 * 30 * 10), "/");
-            }
-            echo json_encode(
-                [
-                    'flag' => 'redirect'
-                ]
-            );
-            Yii::$app->end();
+        if (isset($_POST['ManageRegistration']['teacher_type']) && !empty($_POST['ManageRegistration']['teacher_type'])) {
+            setcookie("teacher_type_" . $user->id, "user_" . $user->id, time() + (86400 * 30 * 10), "/");
         }
+
+        $registerModel->sendVerifyEmail();
 
         echo json_encode(
             [
-                'flag' => 'redirect',
+                'flag' => 'redirect'
             ]
         );
         Yii::$app->end();
