@@ -58,5 +58,19 @@ class CustomAccountRegisterForm extends AccountRegister {
             'email' => Yii::t('UserModule.forms_AccountRegisterForm', 'E-Mail'),
         );
     }
+    
+    public function sendVerifyEmail()
+    {
+        $invite = \humhub\modules\user\models\Invite::findOne(['email' => $this->email]);
+        if ($invite === null) {
+            $invite = new \humhub\modules\user\models\Invite();
+        }
+        $invite->email = $this->email;
+        $invite->source = \humhub\modules\user\models\Invite::SOURCE_SELF;
+        $invite->language = Yii::$app->language;
+        $invite->save();
+        $invite->sendInviteMail();
+        return true;
+    }
 
 }
