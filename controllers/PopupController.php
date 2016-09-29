@@ -172,16 +172,15 @@ class PopupController extends Controller
             $expressionItem = trim($item[1]);
             $keyItem = trim($item[2]);
             $valueItem = trim($item[3]);
-
             if(isset($M_Reg[$keyItem]) && $keyItem != "email_domain" && $keyItem != "subject_area") {
-                if(!in_array($M_Reg[$keyItem], explode(" ", $valueItem))) {
+                if(!in_array(strtolower($M_Reg[$keyItem]), array_map('trim', explode(',', strtolower($valueItem))))) {
                     $errors[$keyItem] = $M_Reg[$keyItem] . " not in array " . '",["' . str_replace(' ', '","', $valueItem) . '"]';
                 }
             }
 
             if(isset($M_Reg['subject_area']) && !empty($M_Reg['subject_area']) && $keyItem == "subject_area") { // because it dependency and this array given
                 foreach ($M_Reg['subject_area'] as $subjectItem) {
-                    if(!in_array($subjectItem, explode(" ", $valueItem))) {
+                    if(!in_array(strtolower($subjectItem), array_map('trim', explode(',', strtolower($valueItem))))) {
                         $errors['subject_area'][] = $subjectItem . ' not in ' . '["' . str_replace(' ', '","', $valueItem) . '"]';
                     }
                 }
@@ -190,7 +189,6 @@ class PopupController extends Controller
 
         return !empty($errors)?false:true;
     }
-
 
     public function actionSecondModal()
     {
@@ -212,7 +210,7 @@ class PopupController extends Controller
 
         $user = new User();
         $user->scenario = 'registration';
-        $user->status = User::STATUS_ENABLED;
+        $user->status = User::STATUS_DISABLED;
 
         $groupModels = \humhub\modules\user\models\Group::find()->orderBy('name ASC')->all();
         $defaultUserGroup = \humhub\models\Setting::Get('defaultUserGroup', 'authentication_internal');
@@ -239,7 +237,7 @@ class PopupController extends Controller
 
         $user->username = substr($randomFirstName . " " . $randomLastName, 0, 25);
         $user->email = $registerModel->email;
-        $user->save(false);
+        $user->save();
 
         $userPasswordModel = new Password();
         $userPasswordModel->setPassword($user->email);
@@ -284,7 +282,7 @@ class PopupController extends Controller
             }
         }
 
-       $this->addOthertoList();
+        $this->addOthertoList();
 
         if (isset($_POST['ManageRegistration']['teacher_type']) && !empty($_POST['ManageRegistration']['teacher_type'])) {
             setcookie("teacher_type_" . $user->id, "user_" . $user->id, time() + (86400 * 30 * 10), "/");
@@ -299,76 +297,7 @@ class PopupController extends Controller
         );
         Yii::$app->end();
     }
-
-    protected function implodeAssocArray($array)
-    {
-        $string = "<div class='errorsSignup'>";
-        if(is_array($array) && !empty(array_filter($array))) {
-            foreach ($array as $key => $value) {
-                foreach ($value as $item) {
-                    $string.=  $item . "<br />";
-                }
-            }
-        }
-        $string.="</div>";
-
-        return $string;
-    }
-
-    protected function addOthertoList()
-    {
-        $data = $_POST['ManageRegistration'];
-        $typeRever = array_flip(ManageRegistration::$type);
-        $dependTeacherTypeId = "";
-        $existTeacherTypeId = '';
-        if(!empty($data) && is_array($data)) {
-            foreach ($data as $key => $value) {
-                if (isset($typeRever[$key]) && !empty($value) && $key != "subject_area" && $key != "teacher_interest") {
-                    $manageItem = ManageRegistration::find()->andWhere(['name' => trim($value)])->one();
-                    if (empty($manageItem)) {
-                        $manage = new ManageRegistration;
-                        $manage->name = trim($value);
-                        $manage->type = $typeRever[$key];
-                        $manage->default = ManageRegistration::DEFAULT_DEFAULT;
-                        $manage->save(false);
-                    }
-                }
-
-                if($key == "teacher_type") {
-                    $existTeacherTypeId = ManageRegistration::find()->andWhere(['name' => trim($value)])->one();
-                    if(!empty($existTeacherTypeId)) {
-                        $dependTeacherTypeId = $existTeacherTypeId->id;
-                    }
-                }
-
-                if(isset($typeRever[$key]) && !empty($value) && $key == "subject_area" && !empty($dependTeacherTypeId)) {
-                    foreach ($value as $itemSubject) {
-                        if (empty($itemSubject) && strtolower($itemSubject) != "other") {
-                            $manage2 = new ManageRegistration;
-                            $manage2->name = trim($itemSubject);
-                            $manage2->type = ManageRegistration::TYPE_SUBJECT_AREA;
-                            $manage2->default = ManageRegistration::DEFAULT_DEFAULT;
-                            $manage2->depend = $dependTeacherTypeId;
-                            $manage2->save(false);
-                        }
-                    }
-                }
-
-                if(!empty($value) && $key == "teacher_interest" && is_array($value)) {
-                    foreach ($value as $itemSubject) {
-                        $manageItem = ManageRegistration::find()->andWhere(['name' => trim($itemSubject)])->one();
-                        if (empty($manageItem)) {
-                            $manage2 = new ManageRegistration;
-                            $manage2->name = trim($itemSubject);
-                            $manage2->default = ManageRegistration::DEFAULT_DEFAULT;
-                            $manage2->save(false);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
+    
     public function validateRequredFields()
     {
         $required = Setting::find()->andWhere(['name' => 'required_manage'])->all();
