@@ -65,7 +65,7 @@ use humhub\models\Setting;
             </p>
             <p class="help-block">
                 <i style="color:#0A246A;font-size:10px">
-                    <?php echo Yii::t('AdminModule.views_setting_index', 'Help: IF teacher_type = "math math2" and teacher_level = "level" and subject_area = "math math2" and email_domain = "edu.au" THEN insert into "Welcome Space, default, some-some"'); ?>
+                    <?php echo Yii::t('AdminModule.views_setting_index', 'Help: IF teacher_type = "math, math2" and teacher_level = "level" and subject_area = "math, math2" THEN insert into "Welcome Space, default, some-some"'); ?>
                 </i>
             </p>
             <?php echo $form->field($model, 'logic_enter')->textarea(array('class' => 'form-control form-control-code', 'placeholder' => 'Enter if-then matching logic...', 'spellcheck' => 'false')); ?>
@@ -77,7 +77,7 @@ use humhub\models\Setting;
             </p>
             <p class="help-block">
                 <i style="color:#0A246A;font-size:10px">
-                    <?php echo Yii::t('AdminModule.views_setting_index', 'Help: Welcome Space, default, some, callback'); ?>
+                    <?php echo Yii::t('AdminModule.views_setting_index', 'Help: Welcome Space, default, some, another'); ?>
                 </i>
             </p>
             <?php echo $form->field($model, 'logic_else')->textarea(array('class' => 'form-control form-control-code', 'placeholder' => 'Enter else matching logic...', 'spellcheck' => 'false')); ?>
