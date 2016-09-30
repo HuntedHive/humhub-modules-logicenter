@@ -483,7 +483,9 @@ class PopupController extends Controller
     {
         $options = '';
         foreach ($array as $option) {
-            $options.="<option value='$option'>$option</option>";
+            if(!empty($option)) {
+                $options.="<option value='$option'>$option</option>";
+            }
         }
 
         if(LogicEntry::getStatusTypeManage(ManageRegistration::TYPE_SUBJECT_AREA)) {
@@ -499,8 +501,10 @@ class PopupController extends Controller
         $ul = '<li class="dropdown-header " data-optgroup="1"><span class="text">Select subject area(s)</span></li>';
         $i = 0;
         foreach ($array as $option) {
-            $ul.='<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">' . $option . '</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
-            $i++;
+            if(!empty($option)) {
+                $ul.='<li data-original-index="' . $i . '"><a tabindex="' . $i . '" class="" style="" data-tokens="null"><span class="text">' . $option . '</span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>';
+                $i++;
+            }
         }
 
         if(LogicEntry::getStatusTypeManage(ManageRegistration::TYPE_SUBJECT_AREA)) {
