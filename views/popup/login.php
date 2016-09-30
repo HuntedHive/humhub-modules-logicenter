@@ -95,7 +95,7 @@ use humhub\modules\registration\models\ManageRegistration;
                         <?php echo Html::activeCheckbox($model, 'rememberMe'); ?>
                     </div>
                     <div class="col-xs-6 text-right">
-                        <a href="<?php echo Url::toRoute('//user/auth/recoverPassword'); ?>">
+                        <a href="<?php echo Url::toRoute('//user/auth/recover-password'); ?>">
                             <?php echo Yii::t('UserModule.views_auth_login', 'Forgot password?') ?>
                         </a>
                     </div>
