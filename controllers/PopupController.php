@@ -32,7 +32,7 @@ class PopupController extends Controller
 
     public $subLayout = "@humhub/modules/user/views/layouts/";
     public $layout = "@humhub/modules/user/views/layouts/main";
-    
+
     /**
      * After the user validated his email
      *
@@ -64,7 +64,7 @@ class PopupController extends Controller
         }
         return $this->redirect(Url::toRoute('/'));
     }
-    
+
     public function actionLogin()
     {
         // If user is already logged in, redirect him to the dashboard
@@ -81,9 +81,10 @@ class PopupController extends Controller
             echo ActiveForm::validate($model);
             Yii::$app->end();
         }
-
+        
         // collect user input data
         if (isset($_POST['AccountLogin'])) {
+
             $model->attributes = $_POST['AccountLogin'];
             // validate user input and redirect to the previous page if valid
             if ($model->validate() && ($model->login())) {
@@ -102,13 +103,13 @@ class PopupController extends Controller
 
         // Registration enabled?
         if ($canRegister && isset($_POST['CustomAccountRegisterForm'])) {
+
             // if it is ajax validation request
             if (Yii::$app->request->isAjax) {
                 $registerModel->load(Yii::$app->request->post());
                 $registerModel->validate();
 
                 $logic = strtolower(Setting::GetText("logic_enter"));
-                $ifRegular = $this->ifRegular(explode("then", $logic)[0]);
 
                 if($registerModel->hasErrors()) {
                     echo json_encode(
@@ -161,34 +162,43 @@ class PopupController extends Controller
 
     protected function parseExpression($string)
     {
-        $errors = [];
-        $string = strtolower($string);
+        $stringArray = explode(" , ", strtolower($string));
         $M_Reg = $_POST['ManageRegistration'];
-        $string = preg_replace("/((&&|||) email_domain = [\'\"](.*?)[\'\"])/i", "", $string);
-        preg_match_all("/(([a-z0-9_]*)[\s]{0,1}=[\s]{0,1}\"(.*?)\")/i", $string, $array, PREG_SET_ORDER);
-        $return = $this->deleteZeroColumnInArray($array);
+        $result = [];
+        foreach ($stringArray as $keyArray => $muchString) {
+            $string = explode("then", $muchString)[0];
+            $string = preg_replace("/((&&|||) email_domain = [\'\"](.*?)[\'\"])/i", "", $string);
+            preg_match_all("/(([a-z0-9_]*)[\s]{0,1}=[\s]{0,1}\"(.*?)\")/i", $string, $array, PREG_SET_ORDER);
+            $return = $this->deleteZeroColumnInArray($array);
 
-        foreach ($return as $item) {
-            $expressionItem = trim($item[1]);
-            $keyItem = trim($item[2]);
-            $valueItem = trim($item[3]);
-            if(isset($M_Reg[$keyItem]) && $keyItem != "email_domain" && $keyItem != "subject_area") {
-                if(!in_array(strtolower($M_Reg[$keyItem]), array_map('trim', explode(',', strtolower($valueItem))))) {
-                    $errors[$keyItem] = $M_Reg[$keyItem] . " not in array " . '",["' . str_replace(' ', '","', $valueItem) . '"]';
+            foreach ($return as $item) {
+                $expressionItem = trim($item[1]);
+                $keyItem = trim($item[2]);
+                $valueItem = trim($item[3]);
+                if (isset($M_Reg[$keyItem]) && $keyItem != "email_domain" && $keyItem != "subject_area") {
+                    if (!in_array(strtolower($M_Reg[$keyItem]), array_map('trim', explode(',', strtolower($valueItem))))) {
+                        $errors[$keyArray][$keyItem] = $M_Reg[$keyItem] . " not in array " . '",["' . str_replace(' ', '","', $valueItem) . '"]';
+                    }
                 }
-            }
 
-            if(isset($M_Reg['subject_area']) && !empty($M_Reg['subject_area']) && $keyItem == "subject_area") { // because it dependency and this array given
-                foreach ($M_Reg['subject_area'] as $subjectItem) {
-                    if(!in_array(strtolower($subjectItem), array_map('trim', explode(',', strtolower($valueItem))))) {
-                        $errors['subject_area'][] = $subjectItem . ' not in ' . '["' . str_replace(' ', '","', $valueItem) . '"]';
+                if (isset($M_Reg['subject_area']) && !empty($M_Reg['subject_area']) && $keyItem == "subject_area") { // because it dependency and this array given
+                    foreach ($M_Reg['subject_area'] as $subjectItem) {
+                        if (!in_array(strtolower($subjectItem), array_map('trim', explode(',', strtolower($valueItem))))) {
+                            $errors[$keyArray]['subject_area'][] = $subjectItem . ' not in ' . '["' . str_replace(' ', '","', $valueItem) . '"]';
+                        }
                     }
                 }
             }
-        }
 
-        return !empty($errors)?false:true;
+            if(empty($errors[$keyArray])) {
+                $result[$keyArray] = true;
+            } else {
+                $result[$keyArray] = false;
+            }
+        }
+        return $result;
     }
+
 
     public function actionSecondModal()
     {
@@ -198,11 +208,12 @@ class PopupController extends Controller
         $logic = strtolower(Setting::GetText("logic_enter"));
         $logic_else = Setting::GetText("logic_else");
         $ifRegular = $this->ifRegular(explode("then", $logic)[0]);
-        $thenRegular = $this->thenRegular(explode("then", $logic)[1])[0][1];
+        $thenRegular = $this->thenRegular($logic);
+
         $if = '';
         $mailReg = '';
 
-        $if = $this->parseExpression(explode("then", $logic)[0]);
+        $ifs = $this->parseExpression($logic);
 
         $registerModel = new CustomAccountRegisterForm();
         $registerModel->load(Yii::$app->request->post());
@@ -252,31 +263,33 @@ class PopupController extends Controller
         $profileModel->lastname = $randomLastName;
         $profileModel->save();
 
-        if ($if) {
-            $then = explode(",", $thenRegular);
-            if(!empty($then)) {
-                foreach ($then as $circle) {
-                    $space = Space::find()->andWhere(['name' => trim($circle)])->one();
-                    if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
-                        $newMemberSpace = new Membership;
-                        $newMemberSpace->space_id = $space->id;
-                        $newMemberSpace->user_id = $user->id;
-                        $newMemberSpace->status = Membership::STATUS_MEMBER;
-                        $newMemberSpace->save();
+        foreach ($ifs as $key => $if) {
+            if ($if) {
+                $then = array_map('trim' , explode(",", $thenRegular[$key]));
+                if (!empty($then)) {
+                    foreach ($then as $circle) {
+                        $space = Space::find()->andWhere(['name' => trim($circle)])->one();
+                        if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
+                            $newMemberSpace = new Membership;
+                            $newMemberSpace->space_id = $space->id;
+                            $newMemberSpace->user_id = $user->id;
+                            $newMemberSpace->status = Membership::STATUS_MEMBER;
+                            $newMemberSpace->save();
+                        }
                     }
                 }
-            }
-        } else {
-            $logic_else_string = explode(",", $logic_else);
-            if(!empty($logic_else_string)) {
-                foreach ($logic_else_string as $circle) {
-                    $space = Space::find()->andWhere(['name' => trim($circle)])->one();
-                    if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
-                        $newMemberSpace = new Membership;
-                        $newMemberSpace->space_id = $space->id;
-                        $newMemberSpace->user_id = $user->id;
-                        $newMemberSpace->status = Membership::STATUS_MEMBER;
-                        $newMemberSpace->save();
+            } else {
+                $logic_else_string = array_map('trim', explode(",", $logic_else));
+                if (!empty($logic_else_string)) {
+                    foreach ($logic_else_string as $circle) {
+                        $space = Space::find()->andWhere(['name' => trim($circle)])->one();
+                        if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
+                            $newMemberSpace = new Membership;
+                            $newMemberSpace->space_id = $space->id;
+                            $newMemberSpace->user_id = $user->id;
+                            $newMemberSpace->status = Membership::STATUS_MEMBER;
+                            $newMemberSpace->save();
+                        }
                     }
                 }
             }
@@ -295,9 +308,80 @@ class PopupController extends Controller
                 'flag' => 'redirect'
             ]
         );
+
+
         Yii::$app->end();
     }
-    
+
+    protected function implodeAssocArray($array)
+    {
+        $string = "<div class='errorsSignup'>";
+        if(is_array($array) && !empty(array_filter($array))) {
+            foreach ($array as $key => $value) {
+                foreach ($value as $item) {
+                    $string.=  $item . "<br />";
+                }
+            }
+        }
+        $string.="</div>";
+
+        return $string;
+    }
+
+    protected function addOthertoList()
+    {
+        $data = $_POST['ManageRegistration'];
+        $typeRever = array_flip(ManageRegistration::$type);
+        $dependTeacherTypeId = "";
+        $existTeacherTypeId = '';
+        if(!empty($data) && is_array($data)) {
+            foreach ($data as $key => $value) {
+                if (isset($typeRever[$key]) && !empty($value) && $key != "subject_area" && $key != "teacher_interest") {
+                    $manageItem = ManageRegistration::find()->andWhere(['name' => trim($value)])->one();
+                    if (empty($manageItem)) {
+                        $manage = new ManageRegistration;
+                        $manage->name = trim($value);
+                        $manage->type = $typeRever[$key];
+                        $manage->default = ManageRegistration::DEFAULT_DEFAULT;
+                        $manage->save(false);
+                    }
+                }
+
+                if($key == "teacher_type") {
+                    $existTeacherTypeId = ManageRegistration::find()->andWhere(['name' => trim($value)])->one();
+                    if(!empty($existTeacherTypeId)) {
+                        $dependTeacherTypeId = $existTeacherTypeId->id;
+                    }
+                }
+
+                if(isset($typeRever[$key]) && !empty($value) && $key == "subject_area" && !empty($dependTeacherTypeId)) {
+                    foreach ($value as $itemSubject) {
+                        if (empty($itemSubject) && strtolower($itemSubject) != "other") {
+                            $manage2 = new ManageRegistration;
+                            $manage2->name = trim($itemSubject);
+                            $manage2->type = ManageRegistration::TYPE_SUBJECT_AREA;
+                            $manage2->default = ManageRegistration::DEFAULT_DEFAULT;
+                            $manage2->depend = $dependTeacherTypeId;
+                            $manage2->save(false);
+                        }
+                    }
+                }
+
+                if(!empty($value) && $key == "teacher_interest" && is_array($value)) {
+                    foreach ($value as $itemSubject) {
+                        $manageItem = ManageRegistration::find()->andWhere(['name' => trim($itemSubject)])->one();
+                        if (empty($manageItem)) {
+                            $manage2 = new ManageRegistration;
+                            $manage2->name = trim($itemSubject);
+                            $manage2->default = ManageRegistration::DEFAULT_DEFAULT;
+                            $manage2->save(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public function validateRequredFields()
     {
         $required = Setting::find()->andWhere(['name' => 'required_manage'])->all();
@@ -329,9 +413,15 @@ class PopupController extends Controller
 
     protected function thenRegular($string)
     {
-        $array= [];
-        preg_match_all("/[\"|'](.*?)[\"|']/i", $string, $array, PREG_SET_ORDER);
-        return $this->deleteZeroColumnInArray($array);
+        $result = [];
+        $stringArray = explode(" , ", strtolower($string));
+        foreach ($stringArray as $keyArray => $muchString) {
+            $array = [];
+            $tmp = explode("then", $muchString)[1];
+            preg_match_all("/[\"|'](.*?)[\"|']/i", $tmp, $array, PREG_SET_ORDER);
+            $result[$keyArray] = $array[0][1];
+        }
+        return $result;
     }
 
     protected function deleteZeroColumnInArray($array)
