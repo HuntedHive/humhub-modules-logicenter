@@ -226,13 +226,17 @@ class PopupController extends Controller
 
         $logic = strtolower(Setting::GetText("logic_enter"));
         $logic_else = Setting::GetText("logic_else");
-        $ifRegular = $this->ifRegular(explode("then", $logic)[0]);
-        $thenRegular = $this->thenRegular($logic);
+        if(!empty($logic) && isset(explode("then", $logic)[0])) {
+            $ifRegular = $this->ifRegular(explode("then", $logic)[0]);
+            $thenRegular = $this->thenRegular($logic);
+        }
 
         $if = '';
         $mailReg = '';
-
-        $ifs = $this->parseExpression($logic);
+        
+        if(!empty($logic) && isset(explode("then", $logic)[0])) {
+            $ifs = $this->parseExpression($logic);
+        }
 
         $registerModel = new CustomAccountRegisterForm();
         $registerModel->load(Yii::$app->request->post());
@@ -281,41 +285,43 @@ class PopupController extends Controller
         $profileModel->firstname = $randomFirstName;
         $profileModel->lastname = $randomLastName;
         $profileModel->save();
-
-        foreach ($ifs as $key => $if) {
-            if ($if) {
-                $then = array_map('trim' , explode(",", $thenRegular[$key]));
-                if (!empty($then)) {
-                    foreach ($then as $circle) {
-                        $space = Space::find()->andWhere(['name' => trim($circle)])->one();
-                        if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
-                            $newMemberSpace = new Membership;
-                            $newMemberSpace->space_id = $space->id;
-                            $newMemberSpace->user_id = $user->id;
-                            $newMemberSpace->status = Membership::STATUS_MEMBER;
-                            $newMemberSpace->save();
+        
+        if(!empty($logic) && isset(explode("then", $logic)[0])) {
+            foreach ($ifs as $key => $if) {
+                if ($if) {
+                    $then = array_map('trim' , explode(",", $thenRegular[$key]));
+                    if (!empty($then)) {
+                        foreach ($then as $circle) {
+                            $space = Space::find()->andWhere(['name' => trim($circle)])->one();
+                            if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
+                                $newMemberSpace = new Membership;
+                                $newMemberSpace->space_id = $space->id;
+                                $newMemberSpace->user_id = $user->id;
+                                $newMemberSpace->status = Membership::STATUS_MEMBER;
+                                $newMemberSpace->save();
+                            }
                         }
                     }
-                }
-            } else {
-                $logic_else_string = array_map('trim', explode(",", $logic_else));
-                if (!empty($logic_else_string)) {
-                    foreach ($logic_else_string as $circle) {
-                        $space = Space::find()->andWhere(['name' => trim($circle)])->one();
-                        if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
-                            $newMemberSpace = new Membership;
-                            $newMemberSpace->space_id = $space->id;
-                            $newMemberSpace->user_id = $user->id;
-                            $newMemberSpace->status = Membership::STATUS_MEMBER;
-                            $newMemberSpace->save();
+                } else {
+                    $logic_else_string = array_map('trim', explode(",", $logic_else));
+                    if (!empty($logic_else_string)) {
+                        foreach ($logic_else_string as $circle) {
+                            $space = Space::find()->andWhere(['name' => trim($circle)])->one();
+                            if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
+                                $newMemberSpace = new Membership;
+                                $newMemberSpace->space_id = $space->id;
+                                $newMemberSpace->user_id = $user->id;
+                                $newMemberSpace->status = Membership::STATUS_MEMBER;
+                                $newMemberSpace->save();
+                            }
                         }
                     }
                 }
             }
+
+            $this->addOthertoList();
         }
-
-        $this->addOthertoList();
-
+        
         if (isset($_POST['ManageRegistration']['teacher_type']) && !empty($_POST['ManageRegistration']['teacher_type'])) {
             setcookie("teacher_type_" . $user->id, "user_" . $user->id, time() + (86400 * 30 * 10), "/");
         }
