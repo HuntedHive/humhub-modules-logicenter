@@ -26,6 +26,7 @@
 
 namespace humhub\modules\logicenter\controllers;
 
+use humhub\modules\logicenter\forms\BaseAccountLogin;
 use humhub\modules\logicenter\forms\BasicSettingsLogicForm;
 use humhub\modules\logicenter\forms\ContactForm;
 use humhub\modules\logicenter\forms\CustomAccountRegisterForm;
@@ -36,7 +37,6 @@ use humhub\modules\space\models\Space;
 use humhub\modules\user\models\Password;
 use humhub\modules\user\models\Profile;
 use humhub\modules\user\models\User;
-use humhub\modules\user\models\forms\AccountLogin;
 use yii\bootstrap\ActiveForm;
 use humhub\models\Setting;
 use humhub\components\Controller;
@@ -75,11 +75,13 @@ class PopupController extends Controller
         $user->status = User::STATUS_ENABLED;
         $user->save();
 
-        $model = new AccountLogin();
-        $model->username = $user->email;
-        $model->password = $user->email;
-        if($model->validate() && $model->login()) {
-            // add session error if need
+        if(!$user->hasErrors()) {
+            $model = new BaseAccountLogin();
+            $model->username = $user->email;
+            $model->password = $user->email;
+            if ($model->validate() && $model->login()) {
+                // add session error if need
+            }
         }
         return $this->redirect(Url::toRoute('/'));
     }
@@ -93,7 +95,7 @@ class PopupController extends Controller
 
         // Show/Allow Anonymous Registration
         $canRegister = Setting::Get('anonymousRegistration', 'authentication_internal');
-        $model = new AccountLogin();
+        $model = new BaseAccountLogin();
 
         // if it is ajax validation request
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'account-login-form') {
@@ -102,9 +104,9 @@ class PopupController extends Controller
         }
         
         // collect user input data
-        if (isset($_POST['AccountLogin'])) {
+        if (isset($_POST['BaseAccountLogin'])) {
 
-            $model->attributes = $_POST['AccountLogin'];
+            $model->attributes = $_POST['BaseAccountLogin'];
             // validate user input and redirect to the previous page if valid
             if ($model->validate() && ($model->login())) {
                 $user = \humhub\modules\user\models\User::findOne(Yii::$app->user->id);
