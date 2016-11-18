@@ -55,7 +55,7 @@ class CustomAccountRegisterForm extends AccountRegister {
     }
 
     public function uniqueEMailValidator($attribute, $params) {
-        $email = User::find()->andWhere(array('email' => $this->$attribute))->one();
+        $email = User::find()->andWhere(array('email' => $this->email))->one();
         if ($email !== null) {
             $this->addError($attribute, Yii::t('UserModule.forms_AccountRegisterForm', 'E-Mail is already in use! - Try forgot password.'));
         }
@@ -64,7 +64,7 @@ class CustomAccountRegisterForm extends AccountRegister {
 
     public function uniqueSecondayEmailValidator($attribute, $params) {
 
-        $email = User::find()->andWhere(array('secondary_email' => $this->$attribute))->one();
+        $email = User::find()->andWhere(array('secondary_email' => $this->email))->one();
         if ($email !== null) {
             $this->addError($attribute, Yii::t('UserModule.forms_AccountRegisterForm', 'E-Mail is already in use! - Try forgot password.'));
         }

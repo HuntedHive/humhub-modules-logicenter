@@ -181,6 +181,13 @@ class PopupController extends Controller
         }
     }
 
+    public function setAlert($message = '', $type = '')
+    {
+        if(in_array($type, ['success', 'error'])) {
+            Yii::$app->session->setFlash($type, $message);
+        }
+    }
+
     protected function parseExpression($string)
     {
         $stringArray = explode(" , ", strtolower($string));
@@ -225,7 +232,8 @@ class PopupController extends Controller
     {
         $this->forcePostRequest();
         $this->validateRequredFields();
-
+        $ifRegular = null;
+        $thenRegular = null;
         $logic = strtolower(Setting::GetText("logic_enter"));
         $logic_else = Setting::GetText("logic_else");
         if(!empty($logic) && isset(explode("then", $logic)[0])) {
@@ -243,6 +251,12 @@ class PopupController extends Controller
         $registerModel = new CustomAccountRegisterForm();
         $registerModel->load(Yii::$app->request->post());
         $registerModel->validate();
+
+
+        if($registerModel->hasErrors()) {
+            $this->setAlert('Error on validation email', 'error');
+            return json_encode(['flag' => 'redirect']);
+        }
 
         $user = new User();
         $user->scenario = 'registration';
@@ -275,10 +289,20 @@ class PopupController extends Controller
         $user->email = $registerModel->email;
         $user->save();
 
+        if($user->hasErrors()) {
+            $this->setAlert('Error on validation user', 'error');
+            return json_encode(['flag' => 'redirect']);
+        }
+
         $userPasswordModel = new Password();
         $userPasswordModel->setPassword($user->email);
         $userPasswordModel->user_id = $user->id;
         $userPasswordModel->save();
+
+        if($userPasswordModel->hasErrors()) {
+            $this->setAlert('Error on validation password', 'error');
+            return json_encode(['flag' => 'redirect']);
+        }
 
         $profileModel = $user->profile;
         $profileModel->scenario = 'registration';
@@ -287,41 +311,50 @@ class PopupController extends Controller
         $profileModel->firstname = $randomFirstName;
         $profileModel->lastname = $randomLastName;
         $profileModel->save();
-        
-        if(!empty($logic) && isset(explode("then", $logic)[0])) {
-            foreach ($ifs as $key => $if) {
-                if ($if) {
-                    $then = array_map('trim' , explode(",", $thenRegular[$key]));
-                    if (!empty($then)) {
-                        foreach ($then as $circle) {
-                            $space = Space::find()->andWhere(['name' => trim($circle)])->one();
-                            if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
-                                $newMemberSpace = new Membership;
-                                $newMemberSpace->space_id = $space->id;
-                                $newMemberSpace->user_id = $user->id;
-                                $newMemberSpace->status = Membership::STATUS_MEMBER;
-                                $newMemberSpace->save();
+
+        if($profileModel->hasErrors()) {
+            $this->setAlert('Error on validation profile', 'error');
+            return json_encode(['flag' => 'redirect']);
+        }
+
+        if(!empty($thenRegular) && !empty($logic) && isset(explode("then", $logic)[0])) {
+            if(!empty($ifs) && is_array($ifs)) {
+                foreach ($ifs as $key => $if) {
+                    if ($if) {
+                        $then = array_map('trim', explode(",", $thenRegular[$key]));
+                        if (!empty($then)) {
+                            foreach ($then as $circle) {
+                                $space = Space::find()->andWhere(['name' => trim($circle)])->one();
+                                if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
+                                    $newMemberSpace = new Membership;
+                                    $newMemberSpace->space_id = $space->id;
+                                    $newMemberSpace->user_id = $user->id;
+                                    $newMemberSpace->status = Membership::STATUS_MEMBER;
+                                    $newMemberSpace->save();
+                                }
                             }
                         }
-                    }
-                } else {
-                    $logic_else_string = array_map('trim', explode(",", $logic_else));
-                    if (!empty($logic_else_string)) {
-                        foreach ($logic_else_string as $circle) {
-                            $space = Space::find()->andWhere(['name' => trim($circle)])->one();
-                            if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
-                                $newMemberSpace = new Membership;
-                                $newMemberSpace->space_id = $space->id;
-                                $newMemberSpace->user_id = $user->id;
-                                $newMemberSpace->status = Membership::STATUS_MEMBER;
-                                $newMemberSpace->save();
+                    } else {
+                        $logic_else_string = array_map('trim', explode(",", $logic_else));
+                        if (!empty($logic_else_string)) {
+                            foreach ($logic_else_string as $circle) {
+                                $space = Space::find()->andWhere(['name' => trim($circle)])->one();
+                                if (!empty($space) && empty(Membership::find()->andWhere(['user_id' => $user->id, 'space_id' => $space->id])->one())) {
+                                    $newMemberSpace = new Membership;
+                                    $newMemberSpace->space_id = $space->id;
+                                    $newMemberSpace->user_id = $user->id;
+                                    $newMemberSpace->status = Membership::STATUS_MEMBER;
+                                    $newMemberSpace->save();
+                                }
                             }
                         }
                     }
                 }
             }
 
-            $this->addOthertoList();
+            if(isset($_POST['ManageRegistration']) && !empty($_POST['ManageRegistration']) && is_array($_POST['ManageRegistration'])) {
+                $this->addOthertoList();
+            }
         }
         
         if (isset($_POST['ManageRegistration']['teacher_type']) && !empty($_POST['ManageRegistration']['teacher_type'])) {
@@ -330,12 +363,9 @@ class PopupController extends Controller
 
         $registerModel->sendVerifyEmail();
 
-        echo json_encode(
-            [
-                'flag' => 'redirect'
-            ]
-        );
+        $this->setAlert('Success registration, check you email', 'success');
 
+        echo json_encode(['flag' => 'redirect']);
 
         Yii::$app->end();
     }

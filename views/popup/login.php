@@ -18,8 +18,26 @@ use humhub\modules\logicenter\models\LogicEntry;
 use humhub\modules\registration\models\ManageRegistration;
 
 \humhub\assets\TeachConnectAsset::register($this);
+
 ?>
 
+<?php
+
+if(!empty(Yii::$app->session->getFlash("success"))) {
+    echo '<div class="alert alert-success fade in" style="width:500px;float:right; margin-top:5px">';
+    echo ' <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+        echo  Yii::$app->session->getFlash("success");
+    echo '</div>';
+}
+
+if(!empty(Yii::$app->session->getFlash("error"))) {
+    echo '<div class="alert alert-danger fade in" style="width:500px;float:right;margin-top:5px">';
+    echo ' <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+        echo  Yii::$app->session->getFlash("error");
+    echo '</div>';
+}
+
+?>
 <link href="<?= $this->context->module->assetsUrl; ?>/css/logicenter.css" rel="stylesheet">
 <div class="SubjectAreaText hidden"></div>
 <div class="text-center login-container-home">
@@ -198,7 +216,7 @@ use humhub\modules\registration\models\ManageRegistration;
                     </div>
                     <div class="row">
                         <div class="col-xs-12">
-                            <p>Have something about TeachConnect that you want to discuss with us? Whether it’s ideas, suggestions or problems, don’t hesitate to get in touch with us on <a href="mailto:teachconnect@outlook.com?Subject=TeachConnect%20Feedback" target="_top">teachconnect@outlook.com</a> or just use the form on this page - we’ll get back to you soon.</p>
+                            <p>Have something about TeachConnect that you want to discuss with us? Whether it’s ideas, suggestions or problems, don’t hesitate to get in touch with us on <a href="mailto:info@teachconnect.edu.au?Subject=TeachConnect%20Feedback" target="_top">info@teachconnect.edu.au</a> or just use the form on this page - we’ll get back to you soon.</p>
 
 							<p>
 							TeachConnect is an inclusive collaboration of many stakeholders, all of whom have an interest in helping teachers. If you or your organisation want to take part, then do get in touch.
@@ -809,7 +827,6 @@ use humhub\modules\registration\models\ManageRegistration;
                 $(".teacher_interest ul.dropdown-menu li a").on("click", function () {
                     var text = $(this).text();
                     var parent = $(this).parents(".form-group").find("select");
-                    console.log(text);
                     if (text.toLowerCase() == "other") {
                         if ($("input[data-type=" + parent.data('type') + "]").length == 0) {
                             parent.parents(".form-group").after(inputHidden_interest + '<div class="form-group col-xs-10 col-sm-7"><input class="form-control" name="' + parent.attr('name') + '" type="text" data-type="' + parent.data('type') + '" /></div></div>');
@@ -823,7 +840,11 @@ use humhub\modules\registration\models\ManageRegistration;
             }, 1500);
 
 
-            $("#account-register-form").on("submit", function (data) {
+            $("#account-register-form").on("submit", function (e) {
+
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
                 $.ajax({
                     url     : $(this).attr("action"),
                     data    : $(this).serialize(),
@@ -870,7 +891,8 @@ use humhub\modules\registration\models\ManageRegistration;
             });
 
 
-            $(".teacher_type").on("change", function() {
+            $(".teacher_type").on("change", function(e) {
+
                 $.ajax({
                     'type': 'POST',
                     'url': "<?= Url::toRoute('/logicenter/popup/get-depend-teacher-type') ?>",
@@ -899,6 +921,13 @@ use humhub\modules\registration\models\ManageRegistration;
 
                         var name = $(".subject_area").attr("name");
                         var type = $(".subject_area").data("type");
+
+                        var teacher_type = 2;
+
+                        if(type == teacher_type && $(this).text() != 'other' && $('#subject_area-other').length != 0) {
+                            $('#subject_area-other').remove();
+                        }
+
                         if ($(".subject_area").val() == "other" && $("input[data-type='" + type + "']").length == 0) {
                             $(".subject_area").after("<input name='" + name + "' type='text' data-type='" + type + "'/>");
                         } else {
@@ -926,7 +955,9 @@ use humhub\modules\registration\models\ManageRegistration;
             });
 
 
-            $("#account-register-form-second").submit(function() {
+            $("#account-register-form-second").submit(function(e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
                $.ajax({
                    url     : $(this).attr("action"),
                    data    : $(this).serialize(),
