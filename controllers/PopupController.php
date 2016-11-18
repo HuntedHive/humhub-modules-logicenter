@@ -254,7 +254,7 @@ class PopupController extends Controller
 
 
         if($registerModel->hasErrors()) {
-            $this->setAlert('Error on validation email', 'error');
+            $this->setAlert('Incorrect validation email', 'error');
             return json_encode(['flag' => 'redirect']);
         }
 
@@ -290,7 +290,7 @@ class PopupController extends Controller
         $user->save();
 
         if($user->hasErrors()) {
-            $this->setAlert('Error on validation user', 'error');
+            $this->setAlert('Incorrect user validation', 'error');
             return json_encode(['flag' => 'redirect']);
         }
 
@@ -300,7 +300,7 @@ class PopupController extends Controller
         $userPasswordModel->save();
 
         if($userPasswordModel->hasErrors()) {
-            $this->setAlert('Error on validation password', 'error');
+            $this->setAlert('Incorrect form validation', 'error');
             return json_encode(['flag' => 'redirect']);
         }
 
@@ -313,7 +313,7 @@ class PopupController extends Controller
         $profileModel->save();
 
         if($profileModel->hasErrors()) {
-            $this->setAlert('Error on validation profile', 'error');
+            $this->setAlert('Invalid validation profile', 'error');
             return json_encode(['flag' => 'redirect']);
         }
 
@@ -363,7 +363,7 @@ class PopupController extends Controller
 
         $registerModel->sendVerifyEmail();
 
-        $this->setAlert('Success registration, check you email', 'success');
+        $this->setAlert('Registration is successful, check your email.', 'success');
 
         echo json_encode(['flag' => 'redirect']);
 
