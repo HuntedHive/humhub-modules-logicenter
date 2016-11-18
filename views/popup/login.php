@@ -216,7 +216,7 @@ if(!empty(Yii::$app->session->getFlash("error"))) {
                     </div>
                     <div class="row">
                         <div class="col-xs-12">
-                            <p>Have something about TeachConnect that you want to discuss with us? Whether it’s ideas, suggestions or problems, don’t hesitate to get in touch with us on <a href="mailto:info@teachconnect.edu.au?Subject=TeachConnect%20Feedback" target="_top">info@teachconnect.edu.au</a> or just use the form on this page - we’ll get back to you soon.</p>
+                            <p>Have something about TeachConnect that you want to discuss with us? Whether it’s ideas, suggestions or problems, don’t hesitate to get in touch with us on <a href="mailto:info@teachconnect.edu.au?Subject=TeachConnect%20Feedback" target="_top"> info@teachconnect.edu.au</a> or just use the form on this page - we’ll get back to you soon.</p>
 
 							<p>
 							TeachConnect is an inclusive collaboration of many stakeholders, all of whom have an interest in helping teachers. If you or your organisation want to take part, then do get in touch.
