@@ -256,6 +256,7 @@ class PopupController extends Controller
         if($registerModel->hasErrors()) {
             $this->setAlert('Incorrect validation email', 'error');
             return json_encode(['flag' => 'redirect']);
+            Yii::$app->end();
         }
 
         $user = new User();
@@ -292,6 +293,7 @@ class PopupController extends Controller
         if($user->hasErrors()) {
             $this->setAlert('Incorrect user validation', 'error');
             return json_encode(['flag' => 'redirect']);
+            Yii::$app->end();
         }
 
         $userPasswordModel = new Password();
@@ -302,6 +304,7 @@ class PopupController extends Controller
         if($userPasswordModel->hasErrors()) {
             $this->setAlert('Incorrect form validation', 'error');
             return json_encode(['flag' => 'redirect']);
+            Yii::$app->end();
         }
 
         $profileModel = $user->profile;
@@ -315,6 +318,7 @@ class PopupController extends Controller
         if($profileModel->hasErrors()) {
             $this->setAlert('Invalid validation profile', 'error');
             return json_encode(['flag' => 'redirect']);
+            Yii::$app->end();
         }
 
         if(!empty($thenRegular) && !empty($logic) && isset(explode("then", $logic)[0])) {
@@ -533,8 +537,6 @@ class PopupController extends Controller
         }
         echo json_encode(['li' => $list, 'option' => $options]);
     }
-
-
 
     public function toOptions($array)
     {
