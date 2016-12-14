@@ -45,7 +45,7 @@ if(!empty(Yii::$app->session->getFlash("error"))) {
 	<nav class="navbar navbar-fixed-top topbar" id="topbar-first">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -55,7 +55,7 @@ if(!empty(Yii::$app->session->getFlash("error"))) {
               <?= \humhub\widgets\SiteLogo::widget(); ?>
           </div>
         </div>
-        <div id="navbar" class="collapse navbar-collapse topbarNav">
+	<div id="" class="collapse navbar-collapse topbarNav" style="height: 0px !important;">
             <ul class="nav navbar-nav navbar-right">
                 <li class="active"><a onclick="$('#about').animatescroll({padding:50, scrollSpeed:1000,easing:'easeInOutCirc'});">
                 	What is TeachConnect?</a></li>
