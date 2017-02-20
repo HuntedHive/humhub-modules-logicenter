@@ -1,18 +1,3 @@
-<?php
-
-use humhub\modules\logicenter\models\LogicEntry;
-
-if(LogicEntry::getStatusHomeOfUser()) {
-?>
-
-<script>
-    $(document).ready(function() {
-        $("#topbar-second ul.nav li.dashboard").remove();
-    });
-</script>
-
-<?php } ?>
-
 <script>
     $(document).ready(function() {
         var orderList = new Array('Knowledge', 'Circles', 'Mentor circle', 'My circles', 'Live Chat', 'Menu');
