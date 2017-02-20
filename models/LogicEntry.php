@@ -81,19 +81,6 @@ class LogicEntry extends \yii\base\Object
         }
     /* END GROUP */
 
-    /**
-     * return true if user is not a member of any circle - My Circles menu on main page panel will be hidden
-     */
-    public static function getStatusHomeOfUser()
-    {
-        $membership = Membership::GetUserSpaces(\Yii::$app->user->id);
-        if(count($membership) < 1) {
-            return true;
-        }
-        
-        return false;
-    }
-
     public static function canCreateSpace()
     {
         return (\Yii::$app->user->permissionmanager->can(new CreatePublicSpace) || \Yii::$app->user->permissionmanager->can(new CreatePrivateSpace()));
