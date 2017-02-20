@@ -15,7 +15,7 @@ if(LogicEntry::getStatusHomeOfUser()) {
 
 <script>
     $(document).ready(function() {
-        var orderList = new Array('Knowledge', 'Circles', 'Mentor circle', 'All circles', 'Live Chat', 'Menu');
+        var orderList = new Array('Knowledge', 'Circles', 'Mentor circle', 'My circles', 'Live Chat', 'Menu');
         arrayString = orderList.toString();
         arrayLowerString = arrayString.toLowerCase();
         arrayLower = arrayLowerString.split(",");
