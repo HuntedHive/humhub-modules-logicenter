@@ -82,12 +82,12 @@ class LogicEntry extends \yii\base\Object
     /* END GROUP */
 
     /**
-     * return true if user have only one mentorship and home on main page panel will hidden
+     * return true if user is not a member of any circle - My Circles menu on main page panel will be hidden
      */
     public static function getStatusHomeOfUser()
     {
         $membership = Membership::GetUserSpaces(\Yii::$app->user->id);
-        if(count($membership) <= 1) {
+        if(count($membership) < 1) {
             return true;
         }
         
