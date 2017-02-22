@@ -26,6 +26,7 @@
 
 namespace humhub\modules\logicenter\controllers;
 
+use humhub\modules\email_whitelist\models\EmailWhitelist;
 use humhub\modules\logicenter\forms\BaseAccountLogin;
 use humhub\modules\logicenter\forms\BasicSettingsLogicForm;
 use humhub\modules\logicenter\forms\ContactForm;
@@ -132,7 +133,9 @@ class PopupController extends Controller
 
                 $logic = strtolower(Setting::GetText("logic_enter"));
 
-                if($registerModel->hasErrors()) {
+                if(!EmailWhitelist::emailIsAllowed(
+                    Yii::$app->request->post()['CustomAccountRegisterForm']['email']
+                )) {
                     echo json_encode(
                         [
                             'flag' => "error",
