@@ -129,7 +129,6 @@ class PopupController extends Controller
             // if it is ajax validation request
             if (Yii::$app->request->isAjax) {
                 $registerModel->load(Yii::$app->request->post());
-                $registerModel->validate();
 
                 $logic = strtolower(Setting::GetText("logic_enter"));
 
