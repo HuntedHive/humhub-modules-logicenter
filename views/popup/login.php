@@ -856,8 +856,7 @@ if(!empty(Yii::$app->session->getFlash("error"))) {
                         }
 
                         if(object.flag == "error") {
-                            $("#modalRegister").find(".blockErrorsRegister").fadeIn();
-                            $("#modalRegister").find(".blockErrorsRegister").html(object.errors);
+                           window.location.href = '/email_whitelist/denied/index';
                         } else {
                             $("#modalRegister").find(".blockErrorsRegister").fadeOut();
                         }
