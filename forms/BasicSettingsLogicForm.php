@@ -54,7 +54,7 @@ class BasicSettingsLogicForm extends BasicSettingsForm
         return array(
             array(['name', 'baseUrl'], 'required'),
             array('name', 'string', 'max' => 150),
-            array('logic_enter', 'string', 'max' => 255),
+            array('logic_enter', 'string', 'max' => 2000),
             array('logic_else', 'string', 'max' => 255),
             array('defaultLanguage', 'in', 'range' => array_keys(Yii::$app->params['availableLanguages'])),
             array('timeZone', 'in', 'range' => \DateTimeZone::listIdentifiers()),
