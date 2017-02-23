@@ -72,8 +72,9 @@ class CustomsController extends Controller
         if (isset($_POST['BasicSettingsLogicForm'])) {
             $form->load(Yii::$app->request->post());
 
+
+
             if ($form->validate()) {
-                $form->logic_enter = $this->validateText($form->logic_enter);
                 preg_match("/[\s]{2,}/", $form->logic_enter, $emptyR);
 
                 if(empty($emptyR)) {
