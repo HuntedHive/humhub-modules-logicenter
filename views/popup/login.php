@@ -149,14 +149,17 @@ if(!empty(Yii::$app->session->getFlash("error"))) {
 
             <h2>Welcome to your teaching community</h2>
 
-            <p>TeachConnect is an altruistic network of pre-service, current and experienced teachers across Queensland. It’s free and always will be - because it’s owned by you, the teachers.<br />
-			<br />
+            <p>TeachConnect is an altruistic network of pre-service, current and experienced teachers across Queensland. It’s free and always will be - because it’s owned by you, the teachers.<br/>
+			<br/>
 			TeachConnect is a simple idea - a platform to let you talk to other teachers and to benefit from the experiences of others. Teachers tend to be generous in sharing their knowledge. TeachConnect is about making sure that this knowledge can be re-used by the whole community of Queensland teachers.
 			</p>
         </div>
-        <div class="col-md-6 col-sm-12 about-section-img"></div>
+        <div class="col-md-6 col-sm-12">
+            <br/>
+            <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe src='https://player.vimeo.com/video/196226741' frameborder='0' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></div>
+            <br/>
+        </div>
         <div class="clearfix"></div>
-
     </div>
 
 </div>
