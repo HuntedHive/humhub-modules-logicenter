@@ -359,7 +359,7 @@ class PopupController extends Controller
             }
 
             if(isset($_POST['ManageRegistration']) && !empty($_POST['ManageRegistration']) && is_array($_POST['ManageRegistration'])) {
-                $this->addOthertoList();
+                $this->addOthertoList($user);
             }
         }
         
@@ -391,8 +391,9 @@ class PopupController extends Controller
         return $string;
     }
 
-    protected function addOthertoList()
+    protected function addOthertoList($user)
     {
+
         $data = $_POST['ManageRegistration'];
         $typeRever = array_flip(ManageRegistration::$type);
         $dependTeacherTypeId = "";
@@ -402,11 +403,16 @@ class PopupController extends Controller
                 if (isset($typeRever[$key]) && !empty($value) && $key != "subject_area" && $key != "teacher_interest") {
                     $manageItem = ManageRegistration::find()->andWhere(['name' => trim($value)])->one();
                     if (empty($manageItem)) {
+                        // Temporarily become the new user so our contribution to types
+                        // and levels are not anonymous
+                        $oldUser = Yii::$app->user->getIdentity();
+                        Yii::$app->user->setIdentity($user);
                         $manage = new ManageRegistration;
                         $manage->name = trim($value);
                         $manage->type = $typeRever[$key];
                         $manage->default = ManageRegistration::DEFAULT_DEFAULT;
                         $manage->save(false);
+                        Yii::$app->user->setIdentity($oldUser);
                     }
                 }
 
