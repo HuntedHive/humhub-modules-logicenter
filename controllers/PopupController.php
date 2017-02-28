@@ -205,7 +205,7 @@ class PopupController extends Controller
                 $expressionItem = trim($item[1]);
                 $keyItem = trim($item[2]);
                 $valueItem = trim($item[3]);
-                if (isset($M_Reg[$keyItem]) && $keyItem != "email_domain" && $keyItem != "subject_area") {
+                if (isset($M_Reg[$keyItem]) && is_string($M_Reg[$keyItem]) && $keyItem != "email_domain" && $keyItem != "subject_area") {
                     if (!in_array(strtolower($M_Reg[$keyItem]), array_map('trim', explode(',', strtolower($valueItem))))) {
                         $errors[$keyArray][$keyItem] = $M_Reg[$keyItem] . " not in array " . '",["' . str_replace(' ', '","', $valueItem) . '"]';
                     }
