@@ -399,20 +399,19 @@ class PopupController extends Controller
         $dependTeacherTypeId = "";
         $existTeacherTypeId = '';
         if(!empty($data) && is_array($data)) {
+            // Temporarily become the new user so our contribution to types
+            // and levels are not anonymous
+            $oldUser = Yii::$app->user->getIdentity();
+            Yii::$app->user->setIdentity($user);
             foreach ($data as $key => $value) {
                 if (isset($typeRever[$key]) && !empty($value) && $key != "subject_area" && $key != "teacher_interest") {
                     $manageItem = ManageRegistration::find()->andWhere(['name' => trim($value)])->one();
                     if (empty($manageItem)) {
-                        // Temporarily become the new user so our contribution to types
-                        // and levels are not anonymous
-                        $oldUser = Yii::$app->user->getIdentity();
-                        Yii::$app->user->setIdentity($user);
                         $manage = new ManageRegistration;
                         $manage->name = trim($value);
                         $manage->type = $typeRever[$key];
                         $manage->default = ManageRegistration::DEFAULT_DEFAULT;
                         $manage->save(false);
-                        Yii::$app->user->setIdentity($oldUser);
                     }
                 }
 
@@ -448,6 +447,7 @@ class PopupController extends Controller
                     }
                 }
             }
+            Yii::$app->user->setIdentity($oldUser);
         }
     }
 
