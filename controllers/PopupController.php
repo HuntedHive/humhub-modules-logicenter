@@ -46,6 +46,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use humhub\modules\user\models\Invite;
 use yii\web\HttpException;
+use yii\db\Expression;
+
 
 class PopupController extends Controller
 {
@@ -103,7 +105,7 @@ class PopupController extends Controller
             echo ActiveForm::validate($model);
             Yii::$app->end();
         }
-        
+
         // collect user input data
         if (isset($_POST['BaseAccountLogin'])) {
 
@@ -245,10 +247,11 @@ class PopupController extends Controller
 
         $if = '';
         $mailReg = '';
-        
+
         if(!empty($logic) && isset(explode("then", $logic)[0])) {
             $ifs = $this->parseExpression($logic);
         }
+
 
         $registerModel = new CustomAccountRegisterForm();
         $registerModel->load(Yii::$app->request->post());
@@ -317,6 +320,17 @@ class PopupController extends Controller
         $profileModel->lastname = $randomLastName;
         $profileModel->save();
 
+        $infoModel = $user->teacherInformation;
+        $infoModel->type = $_POST['ManageRegistration']['teacher_type'];
+        $infoModel->level = $_POST['ManageRegistration']['teacher_level'];
+        if (is_array($_POST['ManageRegistration']['subject_area'])) {
+            $infoModel->subjectAreasArray = $_POST['ManageRegistration']['subject_area'];
+        }
+        if (is_array($_POST['ManageRegistration']['teacher_interest'])) {
+            $infoModel->interestsArray = $_POST['ManageRegistration']['teacher_interest'];
+        }
+        $infoModel->save();
+
         if($profileModel->hasErrors()) {
             $this->setAlert('Invalid validation profile', 'error');
             return json_encode(['flag' => 'redirect']);
@@ -362,12 +376,13 @@ class PopupController extends Controller
                 $this->addOthertoList($user);
             }
         }
-        
+
         if (isset($_POST['ManageRegistration']['teacher_type']) && !empty($_POST['ManageRegistration']['teacher_type'])) {
             setcookie("teacher_type_" . $user->id, "user_" . $user->id, time() + (86400 * 30 * 10), "/");
         }
 
         $registerModel->sendVerifyEmail();
+
 
         $this->setAlert('Registration is successful, check your email.', 'success');
 
@@ -579,4 +594,6 @@ class PopupController extends Controller
         }
         return $ul;
     }
+
+
 }
