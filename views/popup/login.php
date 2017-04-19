@@ -24,14 +24,14 @@ use humhub\modules\registration\models\ManageRegistration;
 <?php
 
 if(!empty(Yii::$app->session->getFlash("success"))) {
-    echo '<div class="alert alert-success fade in" style="width:30%;float:right; margin-top:10px">';
+    echo '<div class="alert alert-success fade in" style="width:320px;float:right; margin-top:10px">';
     echo ' <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
         echo  Yii::$app->session->getFlash("success");
     echo '</div>';
 }
 
 if(!empty(Yii::$app->session->getFlash("error"))) {
-    echo '<div class="alert alert-danger fade in" style="width:30%;float:right;margin-top:10px">';
+    echo '<div class="alert alert-danger fade in" style="width:320px;float:right;margin-top:10px">';
     echo ' <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
         echo  Yii::$app->session->getFlash("error");
     echo '</div>';
